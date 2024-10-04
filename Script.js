@@ -40,7 +40,7 @@ function updateChartColors() {
         window.resultsChart.update();
     }
 }
-/* Hide Introduction Screen with Precise Timing */
+/* Hide Introduction Screen After 3 Seconds */
 setTimeout(() => {
     const intro = document.getElementById('intro');
     intro.style.transition = 'opacity 1s'; // Ensure the transition is applied
