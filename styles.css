@@ -192,7 +192,12 @@ button:focus {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 1s;
+    transition: opacity 1s, z-index 0s 1s; /* Delay the z-index change to align with opacity */
+}
+
+#intro.hidden {
+    opacity: 0; /* Fades out */
+    z-index: -1; /* Lower the z-index after the fade */
 }
 
 #intro h1 {
