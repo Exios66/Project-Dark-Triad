@@ -1,5 +1,3 @@
-// script.js
-
 /* Dark Mode Toggle */
 const darkModeToggle = document.getElementById('darkModeToggle');
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -40,7 +38,8 @@ function updateChartColors() {
         window.resultsChart.update();
     }
 }
-/* Hide Introduction Screen with Precise Timing */
+
+/* Hide Introduction Screen After 3 Seconds */
 setTimeout(() => {
     const intro = document.getElementById('intro');
     intro.style.transition = 'opacity 1s'; // Ensure the transition is applied
@@ -50,15 +49,63 @@ setTimeout(() => {
         intro.style.display = 'none'; // Wait for the opacity transition to finish
     });
 }, 3000);
+
+/* Placeholder for SQL Database */
+let db;
+
+/* Function to Initialize the SQL Database */
+function initializeDatabase() {
+    // Open a SQL database connection
+    const openRequest = window.indexedDB.open("AssessmentsDB", 1);
+
+    openRequest.onupgradeneeded = function(event) {
+        db = event.target.result;
+
+        // Create object stores (tables)
+        const userStore = db.createObjectStore("Users", { keyPath: "id", autoIncrement: true });
+        const assessmentsStore = db.createObjectStore("Assessments", { keyPath: "id", autoIncrement: true });
+        const questionsStore = db.createObjectStore("Questions", { keyPath: "id", autoIncrement: true });
+        const traitsStore = db.createObjectStore("Traits", { keyPath: "id", autoIncrement: true });
+
+        // Example schema
+        userStore.createIndex("username", "username", { unique: true });
+        assessmentsStore.createIndex("assessmentName", "assessmentName");
+        questionsStore.createIndex("assessmentId", "assessmentId");
+        traitsStore.createIndex("traitName", "traitName");
+    };
+
+    openRequest.onsuccess = function(event) {
+        db = event.target.result;
+    };
+
+    openRequest.onerror = function(event) {
+        console.log("Error opening database:", event);
+    };
+}
+
+/* Placeholder for Inserting Data into SQL Database */
+function insertUserData(userData) {
+    const transaction = db.transaction(["Users"], "readwrite");
+    const userStore = transaction.objectStore("Users");
+    const request = userStore.add(userData);
+
+    request.onsuccess = function() {
+        console.log("User data added successfully.");
+    };
+
+    request.onerror = function(event) {
+        console.log("Error adding user data:", event);
+    };
+}
+
 /* Assessment Data */
 const assessments = {
     sdt3: [
         { question: "It's not wise to tell your secrets.", trait: "Machiavellianism" },
         { question: "People see me as a natural leader.", trait: "Narcissism" },
         { question: "I like to get revenge on authorities.", trait: "Psychopathy" },
-        // Additional questions go here...
     ],
-    // Add other assessments here
+    // Additional assessments go here
 };
 
 /* Variables to Track Assessment State */
@@ -198,7 +245,6 @@ function getTraitExplanation(trait) {
         'Machiavellianism': 'Tendency to manipulate and exploit others for personal gain.',
         'Narcissism': 'Excessive self-love, grandiosity, and need for admiration.',
         'Psychopathy': 'Lack of empathy, impulsivity, and antisocial behavior.',
-        // ...add other trait explanations here.
     };
     return explanations[trait] || 'No explanation available.';
 }
@@ -420,7 +466,6 @@ function showScientificArticles() {
 
     const articles = [
         { title: "The Dark Triad of personality: A 10 year review", authors: "Furnham, A., Richards, S. C., & Paulhus, D. L.", year: 2013, journal: "Social and Personality Psychology Compass", doi: "10.1111/spc3.12018" },
-        // ... (other articles)
     ];
 
     articles.forEach(article => {
