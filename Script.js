@@ -40,16 +40,16 @@ function updateChartColors() {
         window.resultsChart.update();
     }
 }
-
-/* Hide Introduction Screen After 3 Seconds */
+/* Hide Introduction Screen with Precise Timing */
 setTimeout(() => {
     const intro = document.getElementById('intro');
+    intro.style.transition = 'opacity 1s'; // Ensure the transition is applied
     intro.style.opacity = '0';
-    setTimeout(() => {
-        intro.style.display = 'none';
-    }, 1000);
-}, 3000);
 
+    intro.addEventListener('transitionend', () => {
+        intro.style.display = 'none'; // Wait for the opacity transition to finish
+    });
+}, 3000);
 /* Assessment Data */
 const assessments = {
     sdt3: [
