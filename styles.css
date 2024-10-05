@@ -38,6 +38,7 @@ body {
     line-height: 1.6;
     background-color: var(--background-color);
     color: var(--text-color);
+    font-size: 16px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -79,16 +80,14 @@ header {
     background-color: var(--primary-color);
     color: #fff;
     border: none;
-    padding: 10px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s, transform 0.1s;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 #darkModeToggle:hover {
-    background-color: var(--button-hover-color);
+    transform: scale(1.05);
 }
 
 #darkModeToggle:active {
@@ -263,7 +262,10 @@ button:hover {
 }
 
 #results p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .trait-explanation {
@@ -358,6 +360,9 @@ footer {
     border: 1px solid #888;
     width: 80%;
     max-width: 600px;
+    border-radius: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .close {
@@ -437,4 +442,151 @@ footer {
 
 #literature li, #background p {
     margin-bottom: 0.5rem;
+}
+
+#psychometric {
+    background-color: var(--assessment-bg);
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px var(--assessment-shadow);
+}
+
+#psychometric h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+#psychometric .container {
+    margin-bottom: 20px;
+}
+
+#psychometric label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+#psychometric textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid var(--assessment-shadow);
+    border-radius: 4px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    resize: vertical;
+    min-height: 100px;
+}
+
+#psychometric button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#psychometric button:hover {
+    background-color: var(--button-hover-color);
+}
+
+#psychometric .results {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(--assessment-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--assessment-shadow);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 30px;
+    border: 1px solid var(--assessment-shadow);
+    border-radius: 8px;
+    padding: 15px;
+    background-color: var(--assessment-bg);
+}
+
+/* Add these styles to improve readability and responsiveness */
+
+body {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .assessment, #results, #literature, #background, #psychometric {
+        padding: 0.8rem;
+    }
+}
+
+/* Improve the dark mode toggle button */
+#darkModeToggle {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+#darkModeToggle:hover {
+    transform: scale(1.05);
+}
+
+/* Enhance the assessment buttons */
+.assessment button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.assessment button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Improve the chart container */
+.chart-container {
+    margin-top: 30px;
+    border: 1px solid var(--assessment-shadow);
+    border-radius: 8px;
+    padding: 15px;
+    background-color: var(--assessment-bg);
+}
+
+/* Style the psychometric calculator inputs */
+#psychometric textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Enhance the results display */
+#results p {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Improve the modal appearance */
+.modal-content {
+    border-radius: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
 }

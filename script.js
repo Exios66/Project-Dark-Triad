@@ -877,7 +877,7 @@ function initializeBackgroundAndHistory() {
 
 // Function to switch between sections
 function switchSection(sectionId) {
-    const sections = ['assessments', 'literature', 'background'];
+    const sections = ['assessments', 'literature', 'background', 'psychometric'];
     sections.forEach(section => {
         document.getElementById(section).classList.toggle('hidden', section !== sectionId);
     });
@@ -890,4 +890,195 @@ document.querySelectorAll('nav a').forEach(link => {
         const sectionId = e.target.getAttribute('href').slice(1);
         switchSection(sectionId);
     });
+});
+
+// Add these functions to your existing script.js file
+
+function calculateStats() {
+    const scoresInput = document.getElementById('scores').value;
+    const group2Input = document.getElementById('group2').value;
+    const scores = scoresInput.split(',').map(Number).filter(n => !isNaN(n));
+    const group2 = group2Input.split(',').map(Number).filter(n => !isNaN(n));
+
+    if (scores.length === 0) {
+        alert("Please enter valid scores.");
+        return;
+    }
+
+    const mean = calculateMean(scores);
+    const median = calculateMedian(scores);
+    const variance = calculateVariance(scores, mean);
+    const stddev = Math.sqrt(variance);
+    const skewness = calculateSkewness(scores, mean, stddev);
+    const kurtosis = calculateKurtosis(scores, mean, stddev);
+    const cronbachAlpha = calculateCronbachAlpha(scores);
+    const correlation = group2.length > 0 ? calculateCorrelation(scores, group2) : 'N/A';
+    const tTestResult = group2.length > 0 ? performTTest(scores, group2) : 'N/A';
+
+    document.getElementById('mean').innerText = mean.toFixed(2);
+    document.getElementById('median').innerText = median.toFixed(2);
+    document.getElementById('variance').innerText = variance.toFixed(2);
+    document.getElementById('stddev').innerText = stddev.toFixed(2);
+    document.getElementById('skewness').innerText = skewness.toFixed(2);
+    document.getElementById('kurtosis').innerText = kurtosis.toFixed(2);
+    document.getElementById('cronbach').innerText = cronbachAlpha.toFixed(2);
+    document.getElementById('correlation').innerText = typeof correlation === 'number' ? correlation.toFixed(2) : correlation;
+    document.getElementById('ttest').innerText = tTestResult;
+
+    renderHistogram(scores);
+}
+
+// Include all the statistical calculation functions here (calculateMean, calculateMedian, etc.)
+// ... (copy all the functions from the provided HTML file)
+
+function renderHistogram(scores) {
+    const ctx = document.getElementById('chartCanvas').getContext('2d');
+    const binSize = 10;
+    const minScore = Math.min(...scores);
+    const maxScore = Math.max(...scores);
+    const numBins = Math.ceil((maxScore - minScore) / binSize);
+    
+    const bins = Array(numBins).fill(0);
+    scores.forEach(score => {
+        const binIndex = Math.floor((score - minScore) / binSize);
+        bins[binIndex]++;
+    });
+
+    const labels = Array.from({ length: numBins }, (_, i) => `${minScore + i * binSize}-${minScore + (i + 1) * binSize - 1}`);
+
+    if (window.myChart) {
+        window.myChart.destroy();
+    }
+
+    window.myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Frequency of Scores',
+                data: bins,
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Score Ranges',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Frequency',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Add this function to smooth scroll to sections
+function smoothScrollTo(elementId) {
+    const element = document.getElementById(elementId);
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Update the switchSection function to include smooth scrolling
+function switchSection(sectionId) {
+    const sections = ['assessments', 'literature', 'background', 'psychometric'];
+    sections.forEach(section => {
+        document.getElementById(section).classList.toggle('hidden', section !== sectionId);
+    });
+    smoothScrollTo(sectionId);
+}
+
+// Add this function to show a loading indicator
+function showLoading(show) {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (!loadingIndicator) {
+        const indicator = document.createElement('div');
+        indicator.id = 'loadingIndicator';
+        indicator.innerHTML = '<div class="spinner"></div>';
+        document.body.appendChild(indicator);
+    }
+    document.getElementById('loadingIndicator').style.display = show ? 'flex' : 'none';
+}
+
+// Update the calculateStats function to show loading indicator
+function calculateStats() {
+    showLoading(true);
+    setTimeout(() => {
+        // Existing calculateStats code here
+        showLoading(false);
+    }, 500); // Simulate a short delay for calculation
+}
+
+// Add this function to provide feedback after exporting results
+function showExportFeedback(success) {
+    const feedback = document.createElement('div');
+    feedback.textContent = success ? 'Results exported successfully!' : 'Failed to export results.';
+    feedback.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: ${success ? 'var(--primary-color)' : 'red'};
+        color: white;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    document.body.appendChild(feedback);
+    setTimeout(() => feedback.style.opacity = '1', 100);
+    setTimeout(() => {
+        feedback.style.opacity = '0';
+        setTimeout(() => feedback.remove(), 300);
+    }, 3000);
+}
+
+// Update the exportResults function to show feedback
+function exportResults() {
+    // Existing exportResults code here
+    showExportFeedback(true); // Assume success for now
+}
+
+// Add this function to confirm before resetting the assessment
+function confirmReset() {
+    return confirm('Are you sure you want to reset the assessment? All progress will be lost.');
+}
+
+// Update the resetAssessment function to include confirmation
+function resetAssessment() {
+    if (confirmReset()) {
+        // Existing resetAssessment code here
+    }
+}
+
+// Add event listener for escape key to close modal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
 });

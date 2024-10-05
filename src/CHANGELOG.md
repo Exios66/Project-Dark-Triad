@@ -1,8 +1,19 @@
 # Changelog
 
+## [0.0.3] - 2024-10-05
+
+### Added in [v0.0.3]
+
+- Modified index.html: Improved structure and content
+- Updated package-lock.json and package.json: Revised dependencies
+- Enhanced script.js: Added new features and optimized existing code
+- Improved server.js: Implemented server-side changes
+- Updated src/CHANGELOG.md: Documented recent changes
+- Refined styles.css: Enhanced visual appearance and responsiveness
+
 ## [0.0.2] - 2024-10-05
 
-### Added in [v0.0.2]
+### Added
 
 - Update to version 1.2.5
 - feat: Update version to 1.1.5
@@ -47,7 +58,7 @@
 
 ## [0.0.1] - 2024-10-04
 
-### Added
+### Added in [v0.0.1]
 
 - v 1.0.0 a
 - Update styles.css
@@ -78,4 +89,3 @@
 - Create index.html [v0.0.1]
 - Create styles.css
 - Create Script.js [v0.0.1]
-
