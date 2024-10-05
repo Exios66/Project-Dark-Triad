@@ -18,7 +18,7 @@
     <div id="darkModeToggleContainer">
         <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
     </div>
-    <div id="content" class="hidden">
+    <div id="content">
         <header>
             <h1>Dark Triad Assessments</h1>
             <button id="menuToggle" aria-label="Toggle Menu">☰</button>
@@ -33,41 +33,7 @@
         </nav>
         <main>
             <section id="assessments">
-                <article id="sdt3" class="assessment">
-                    <h2>Short Dark Triad (SDT3)</h2>
-                    <p>Assesses Machiavellianism, Narcissism, and Psychopathy.</p>
-                    <button onclick="startAssessment('sdt3')">Start SDT3 Assessment</button>
-                </article>
-                <article id="dirtyDozen" class="assessment">
-                    <h2>Dirty Dozen</h2>
-                    <p>A concise measure of the Dark Triad traits.</p>
-                    <button onclick="startAssessment('dirtyDozen')">Start Dirty Dozen Assessment</button>
-                </article>
-                <article id="sdt4" class="assessment">
-                    <h2>Short Dark Tetrad (SDT4)</h2>
-                    <p>Assesses Machiavellianism, Narcissism, Psychopathy, and Sadism.</p>
-                    <button onclick="startAssessment('sdt4')">Start SDT4 Assessment</button>
-                </article>
-                <article id="machIV" class="assessment">
-                    <h2>MACH IV</h2>
-                    <p>Measures Machiavellianism in interpersonal relationships.</p>
-                    <button onclick="startAssessment('machIV')">Start MACH IV Assessment</button>
-                </article>
-                <article id="mmpi" class="assessment">
-                    <h2>MMPI-style</h2>
-                    <p>A comprehensive personality and psychopathology assessment.</p>
-                    <button onclick="startAssessment('mmpi')">Start MMPI-style Assessment</button>
-                </article>
-                <article id="hexaco" class="assessment">
-                    <h2>HEXACO</h2>
-                    <p>Evaluates six major dimensions of personality.</p>
-                    <button onclick="startAssessment('hexaco')">Start HEXACO Assessment</button>
-                </article>
-                <article id="ocean" class="assessment">
-                    <h2>OCEAN (Big Five)</h2>
-                    <p>Assesses the five broad personality traits.</p>
-                    <button onclick="startAssessment('ocean')">Start OCEAN Assessment</button>
-                </article>
+                <!-- Your assessment articles go here -->
             </section>
             <div id="progressBarContainer" class="hidden">
                 <div id="progressBar"></div>
@@ -79,7 +45,6 @@
                 <h2>Psychometric Calculator</h2>
                 <!-- Add psychometric calculator content here -->
             </section>
-            <!-- Add this inside the <main> tag, after the other sections -->
             <section id="stroopTask" class="hidden">
                 <h2>Stroop Task</h2>
                 <div id="stroopInstructions">
@@ -110,8 +75,6 @@
             <ul id="articlesList"></ul>
         </div>
     </div>
-    <script src="script.js"></script>
-    <!-- Add this just before the closing </body> tag -->
     <div id="interpretationModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeInterpretationModal()">&times;</span>
@@ -119,5 +82,6 @@
             <div id="interpretationContent"></div>
         </div>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>
