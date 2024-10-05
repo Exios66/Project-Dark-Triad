@@ -6,7 +6,17 @@ const dotenv = require('dotenv');
 const rateLimit = require("express-rate-limit");
 const winston = require('winston');
 const NodeCache = require("node-cache");
-const db = require('./src/database');
+const sqlite3 = require('sqlite3').verbose();
+const { open } = require('sqlite');
+
+let db;
+
+(async () => {
+  db = await open({
+    filename: './database.sqlite',
+    driver: sqlite3.Database
+  });
+})();
 
 dotenv.config();
 
@@ -36,10 +46,9 @@ app.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    const stmt = db.prepare('INSERT INTO Users (username, email, password) VALUES (?, ?, ?)');
-    const result = stmt.run(username, email, hashedPassword);
+    await db.run('INSERT INTO Users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
     
-    const token = jwt.sign({ id: result.lastInsertRowid }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET, {
       expiresIn: 86400 // expires in 24 hours
     });
     
@@ -54,8 +63,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   
-  const stmt = db.prepare('SELECT * FROM Users WHERE email = ?');
-  const user = stmt.get(email);
+  const user = await db.get('SELECT * FROM Users WHERE email = ?', [email]);
   
   if (!user) return res.status(404).json({ message: 'User not found' });
   
@@ -72,13 +80,12 @@ app.post('/login', (req, res) => {
 
 // Fetch available assessments
 app.get('/api/assessments', verifyToken, (req, res) => {
-  db.all('SELECT * FROM Assessments', (err, rows) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Error fetching assessments' });
-    }
-    res.json(rows);
-  });
+  const rows = await db.all('SELECT * FROM Assessments');
+  if (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Error fetching assessments' });
+  }
+  res.json(rows);
 });
 
 // Fetch questions for a specific assessment
@@ -90,7 +97,7 @@ app.get('/api/assessment/:assessmentId/questions', verifyToken, (req, res) => {
     return res.json(cachedQuestions);
   }
 
-  db.all(
+  const rows = await db.all(
     'SELECT q.question_id, q.question_text, q.question_order, t.trait_name ' +
     'FROM Questions q ' +
     'LEFT JOIN Trait_Descriptions t ON q.trait_id = t.trait_id ' +
@@ -174,7 +181,7 @@ app.get('/api/user/results', verifyToken, (req, res) => {
     return res.json(cachedResults);
   }
 
-  db.all(
+  const rows = await db.all(
     'SELECT ar.result_id, a.assessment_name, ar.total_score, ar.result_details, ar.completed_at ' +
     'FROM Assessment_Results ar ' +
     'JOIN Assessments a ON ar.assessment_id = a.assessment_id ' +
