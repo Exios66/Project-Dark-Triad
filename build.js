@@ -18,4 +18,24 @@ filesToCopy.forEach(file => {
   }
 });
 
+// Copy additional files and directories
+const additionalItems = ['components', 'constants', 'services', 'index.js', 'reportWebVitals.js'];
+
+additionalItems.forEach(item => {
+  const srcPath = path.join(srcDir, item);
+  const destPath = path.join(rootDir, item);
+  
+  if (fs.existsSync(srcPath)) {
+    if (fs.lstatSync(srcPath).isDirectory()) {
+      fs.cpSync(srcPath, destPath, { recursive: true });
+      console.log(`Copied directory ${item} to root`);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+      console.log(`Copied file ${item} to root`);
+    }
+  } else {
+    console.log(`Warning: ${item} not found in src directory`);
+  }
+});
+
 console.log('Build process completed.');
