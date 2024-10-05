@@ -39,134 +39,112 @@ function updateChartColors() {
     }
 }
 
-/* Hide Introduction Screen After 3 Seconds */
-function hideIntroduction() {
-    const intro = document.getElementById('intro');
-    if (!intro) return;
-
-    intro.style.transition = 'opacity 1s';
-    intro.style.opacity = '0';
-
-    intro.addEventListener('transitionend', () => {
-        intro.style.display = 'none';
-    });
-}
-
-setTimeout(hideIntroduction, 3000);
-
-/* Assessment Data */
-const assessments = {
-    sdt3: [
-        { question: "It's not wise to tell your secrets.", trait: "Machiavellianism" },
-        { question: "People see me as a natural leader.", trait: "Narcissism" },
-        { question: "I like to get revenge on authorities.", trait: "Psychopathy" },
-        // Additional questions go here...
-    ],
-    // Add other assessments here
-};
-
-/* Variables to Track Assessment State */
-let currentAssessment = '';
-let currentQuestionIndex = 0;
-let answers = {};
-let autoAdvanceTimer;
-
-/* Function to Start an Assessment */
-function startAssessment(assessment) {
+/* Function to Start Assessment */
+async function startAssessment(assessmentType) {
     try {
-        currentAssessment = assessment;
-        currentQuestionIndex = 0;
-        answers = {};
-        document.getElementById('assessments').classList.add('hidden');
-        document.getElementById('assessmentQuestions').classList.remove('hidden');
-        document.getElementById('progressBarContainer').classList.remove('hidden');
-        showQuestion();
+        const response = await fetch(`/api/assessment/${assessmentType}/questions`, {
+            headers: {
+                'x-access-token': localStorage.getItem('token')
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch questions');
+        }
+        const questions = await response.json();
+        displayQuestions(questions);
     } catch (error) {
-        console.error(`Error starting assessment ${assessment}:`, error);
-        alert('An error occurred while starting the assessment. Please try again.');
+        console.error('Error starting assessment:', error);
+        alert('Failed to start assessment. Please try again.');
     }
 }
 
-/* Function to Display a Question */
-function showQuestion() {
-    const questionContainer = document.getElementById('assessmentQuestions');
-    const currentAssessmentQuestions = assessments[currentAssessment];
-    if (!currentAssessmentQuestions || currentQuestionIndex >= currentAssessmentQuestions.length) {
-        console.error('Invalid assessment or question index');
+/* Function to Display Questions */
+function displayQuestions(questions) {
+    currentQuestions = questions;
+    currentQuestionIndex = 0;
+    answers = [];
+    
+    const questionContainer = document.getElementById('question');
+    questionContainer.innerHTML = '';
+    questionContainer.classList.remove('hidden');
+    
+    document.getElementById('results').classList.add('hidden');
+    document.getElementById('resultsChart').classList.add('hidden');
+    
+    displayCurrentQuestion();
+}
+
+/* Function to Display Current Question */
+function displayCurrentQuestion() {
+    const question = currentQuestions[currentQuestionIndex];
+    const questionContainer = document.getElementById('question');
+    questionContainer.innerHTML = `
+        <h2>Question ${currentQuestionIndex + 1}</h2>
+        <p>${question.question_text}</p>
+        <div class="likert-scale">
+            ${createLikertScale()}
+        </div>
+        <button onclick="nextQuestion()">Next</button>
+    `;
+    updateProgressBar();
+}
+
+/* Function to Create Likert Scale */
+function createLikertScale() {
+    let scale = '';
+    for (let i = 1; i <= 5; i++) {
+        scale += `
+            <label>
+                <input type="radio" name="answer" value="${i}" required>
+                ${i}
+            </label>
+        `;
+    }
+    return scale;
+}
+
+/* Function to Handle Next Question */
+function nextQuestion() {
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (!selectedAnswer) {
+        alert('Please select an answer before proceeding.');
         return;
     }
-
-    const question = currentAssessmentQuestions[currentQuestionIndex];
-    const totalQuestions = currentAssessmentQuestions.length;
-
-    questionContainer.innerHTML = `
-        <div class="question">
-            <h3>Question ${currentQuestionIndex + 1} of ${totalQuestions}</h3>
-            <p>${question.question}</p>
-            <div class="options">
-                ${[1, 2, 3, 4, 5].map(value => `
-                    <label>
-                        <input type="radio" name="answer" value="${value}" onchange="resetAutoAdvance()">
-                        ${value} - ${getScaleLabel(value)}
-                    </label>
-                `).join('')}
-            </div>
-        </div>
-        <button onclick="submitAnswer()">Next</button>
-        <div id="autoAdvanceTimer"></div>
-    `;
-
-    updateProgressBar();
-    startAutoAdvance();
-}
-
-/* Function to Start Auto-Advance Timer */
-function startAutoAdvance() {
-    let timeLeft = 4;
-    const timerDisplay = document.getElementById('autoAdvanceTimer');
-    timerDisplay.textContent = `Auto-advancing in ${timeLeft} seconds...`;
-
-    autoAdvanceTimer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft > 0) {
-            timerDisplay.textContent = `Auto-advancing in ${timeLeft} seconds...`;
-        } else {
-            clearInterval(autoAdvanceTimer);
-            submitAnswer();
-        }
-    }, 1000);
-}
-
-/* Function to Reset Auto-Advance Timer */
-function resetAutoAdvance() {
-    clearInterval(autoAdvanceTimer);
-    startAutoAdvance();
-}
-
-/* Function to Get Scale Label */
-function getScaleLabel(value) {
-    const labels = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
-    return labels[value - 1] || '';
-}
-
-/* Function to Submit an Answer */
-function submitAnswer() {
-    clearInterval(autoAdvanceTimer);
-    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-    if (selectedAnswer) {
-        const question = assessments[currentAssessment][currentQuestionIndex];
-        const score = parseInt(selectedAnswer.value);
-        answers[question.trait] = (answers[question.trait] || 0) + (question.reversed ? 6 - score : score);
-
-        currentQuestionIndex++;
-        if (currentQuestionIndex < assessments[currentAssessment].length) {
-            showQuestion();
-        } else {
-            showResults();
-        }
+    
+    answers.push({
+        questionId: currentQuestions[currentQuestionIndex].question_id,
+        value: parseInt(selectedAnswer.value),
+        trait: currentQuestions[currentQuestionIndex].trait_name
+    });
+    
+    currentQuestionIndex++;
+    
+    if (currentQuestionIndex < currentQuestions.length) {
+        displayCurrentQuestion();
     } else {
-        alert('Please select an answer before proceeding.');
-        startAutoAdvance();
+        submitAssessment();
+    }
+}
+
+/* Function to Submit Assessment */
+async function submitAssessment() {
+    try {
+        const response = await fetch(`/api/assessment/${currentQuestions[0].assessment_id}/submit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem('token')
+            },
+            body: JSON.stringify({ answers })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to submit assessment');
+        }
+        const result = await response.json();
+        showResults(result);
+    } catch (error) {
+        console.error('Error submitting assessment:', error);
+        alert('Failed to submit assessment. Please try again.');
     }
 }
 
@@ -175,49 +153,41 @@ function updateProgressBar() {
     const progressBar = document.getElementById('progressBar');
     if (!progressBar) return;
 
-    const progress = ((currentQuestionIndex + 1) / assessments[currentAssessment].length) * 100;
+    const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
     progressBar.style.width = `${progress}%`;
     progressBar.textContent = `${Math.round(progress)}%`;
     progressBar.setAttribute('aria-valuenow', progress.toFixed(0));
 }
 
 /* Function to Display Results */
-function showResults() {
-    document.getElementById('assessmentQuestions').classList.add('hidden');
-    document.getElementById('progressBarContainer').classList.add('hidden');
-    document.getElementById('results').classList.remove('hidden');
-    document.getElementById('resultsChart').classList.remove('hidden');
+function showResults(result) {
+  const resultSection = document.getElementById('results');
+  resultSection.innerHTML = '';
 
-    const traits = Object.keys(answers);
-    const scores = traits.map(trait => {
-        const maxScore = assessments[currentAssessment].filter(q => q.trait === trait).length * 5;
-        return (answers[trait] / maxScore) * 100;
-    });
+  const totalScore = result.totalScore;
+  const resultDetails = result.resultDetails;
 
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = `
-        <h2>Your Results</h2>
-        ${traits.map((trait, index) => `
-            <p>${trait}: ${scores[index].toFixed(2)}% 
-            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ</span></p>
-        `).join('')}
-        <button onclick="resetAssessment()">Take Another Assessment</button>
-        <button onclick="exportResults()">Export Results</button>
-        <button onclick="uploadStoredResults()" id="uploadButton" class="hidden">Upload Stored Results</button>
-    `;
+  const h2 = document.createElement('h2');
+  h2.textContent = 'Assessment Results';
+  resultSection.appendChild(h2);
 
-    createChart(traits, scores);
-}
+  const p = document.createElement('p');
+  p.textContent = `Total Score: ${totalScore}`;
+  resultSection.appendChild(p);
 
-/* Function to Get Trait Explanation */
-function getTraitExplanation(trait) {
-    const explanations = {
-        'Machiavellianism': 'Tendency to manipulate and exploit others for personal gain.',
-        'Narcissism': 'Excessive self-love, grandiosity, and need for admiration.',
-        'Psychopathy': 'Lack of empathy, impulsivity, and antisocial behavior.',
-        // ...add other trait explanations here.
-    };
-    return explanations[trait] || 'No explanation available.';
+  const ul = document.createElement('ul');
+  for (const trait in resultDetails) {
+    const li = document.createElement('li');
+    li.textContent = `${trait}: ${resultDetails[trait].average.toFixed(2)}`;
+    ul.appendChild(li);
+  }
+  resultSection.appendChild(ul);
+
+  createChart(Object.keys(resultDetails), Object.values(resultDetails).map(d => d.average));
+
+  document.getElementById('question').classList.add('hidden');
+  resultSection.classList.remove('hidden');
+  document.getElementById('resultsChart').classList.remove('hidden');
 }
 
 /* Function to Create Results Chart */
@@ -237,14 +207,14 @@ function createChart(traits, scores) {
         data: {
             labels: traits,
             datasets: [{
-                label: 'Scores',
+                label: 'Your Scores',
                 data: scores,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgb(255, 99, 132)',
-                pointBackgroundColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(0, 160, 160, 0.2)',
+                borderColor: 'rgb(0, 160, 160)',
+                pointBackgroundColor: 'rgb(0, 160, 160)',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(255, 99, 132)'
+                pointHoverBorderColor: 'rgb(0, 160, 160)'
             }]
         },
         options: {
@@ -289,157 +259,46 @@ function createChart(traits, scores) {
     });
 }
 
-/* Function to Reset Assessment */
-function resetAssessment() {
-    document.getElementById('results').classList.add('hidden');
-    document.getElementById('resultsChart').classList.add('hidden');
-    document.getElementById('assessments').classList.remove('hidden');
-    document.getElementById('uploadButton').classList.remove('hidden');
-    currentAssessment = '';
-    currentQuestionIndex = 0;
-    answers = {};
-}
-
-/* Function to Export Results */
-function exportResults() {
-    const patientID = prompt("Enter the patient ID for storage:", "");
-    if (!patientID) {
-        alert("Patient ID is required for export.");
-        return;
-    }
-
-    const exportFormat = prompt("Choose export format (txt or csv):", "txt");
-    if (exportFormat === "txt" || exportFormat === "csv") {
-        const content = generateExportContent(exportFormat);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const fileName = `${patientID}_${timestamp}.${exportFormat}`;
-
-        // For browser download
-        const blob = new Blob([content], { type: `text/${exportFormat}` });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = fileName;
-        a.click();
-
-        // Placeholder for storing results locally
-        storeResultsLocally(fileName, content);
-    } else {
-        alert("Invalid format. Please choose 'txt' or 'csv'.");
-    }
-}
-
-/* Placeholder Function to Store Results Locally */
-function storeResultsLocally(fileName, content) {
-    console.log(`Storing file: ${fileName}`);
-    console.log(`Content: ${content}`);
-    alert(`File ${fileName} has been stored locally. (This is a simulation)`);
-}
-
-/* Function to Generate Export Content */
-function generateExportContent(format) {
-    const traits = Object.keys(answers);
-    const scores = traits.map(trait => {
-        const maxScore = assessments[currentAssessment].filter(q => q.trait === trait).length * 5;
-        return (answers[trait] / maxScore) * 100;
-    });
-
-    if (format === "txt") {
-        let content = `Dark Triad Assessment Results\n`;
-        content += `Assessment: ${currentAssessment}\n\n`;
-        traits.forEach((trait, index) => {
-            content += `${trait}: ${scores[index].toFixed(2)}%\n`;
-        });
-        return content;
-    } else if (format === "csv") {
-        let content = "Trait,Score\n";
-        traits.forEach((trait, index) => {
-            content += `${trait},${scores[index].toFixed(2)}\n`;
-        });
-        return content;
-    }
-}
-
-/* Function to Upload Stored Results */
-function uploadStoredResults() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.txt,.csv';
-    fileInput.onchange = (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
-            const uploadedData = parseUploadedContent(content, file.name.split('.').pop());
-            visualizeUploadedData(uploadedData);
-        };
-        reader.readAsText(file);
-    };
-    fileInput.click();
-}
-
-/* Function to Parse Uploaded Content */
-function parseUploadedContent(content, fileType) {
-    if (fileType === 'csv') {
-        const lines = content.split('\n');
-        const data = {};
-        lines.slice(1).forEach(line => {
-            const [trait, score] = line.split(',');
-            if (trait && score) {
-                data[trait.trim()] = parseFloat(score);
-            }
-        });
-        return data;
-    } else {
-        // Assume TXT format
-        const lines = content.split('\n');
-        const data = {};
-        lines.forEach(line => {
-            const [trait, score] = line.split(':');
-            if (trait && score) {
-                data[trait.trim()] = parseFloat(score);
-            }
-        });
-        return data;
-    }
-}
-
-/* Function to Visualize Uploaded Data */
-function visualizeUploadedData(data) {
-    const traits = Object.keys(data);
-    const scores = traits.map(trait => data[trait]);
-
-    document.getElementById('assessments').classList.add('hidden');
-    document.getElementById('results').classList.remove('hidden');
-    document.getElementById('resultsChart').classList.remove('hidden');
-
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = `
-        <h2>Uploaded Results</h2>
-        ${traits.map((trait, index) => `
-            <p>${trait}: ${scores[index].toFixed(2)}% 
-            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ</span></p>
-        `).join('')}
-        <button onclick="resetAssessment()">Back to Assessments</button>
-    `;
-
-    createChart(traits, scores);
-}
-
 /* Function to Show Statistics Options */
 function showStatisticsOptions() {
-    document.getElementById('assessments').classList.add('hidden');
-    document.getElementById('statisticsOptions').classList.remove('hidden');
+    // Implement statistics options display
+    console.log('Showing statistics options');
+}
+
+/* Function to Show History and Background */
+function showHistoryAndBackground() {
+    // Implement history and background display
+    console.log('Showing history and background');
 }
 
 /* Function to Show Scientific Articles */
 function showScientificArticles() {
     const modal = document.getElementById('articlesModal');
     const articlesList = document.getElementById('articlesList');
-    articlesList.innerHTML = ''; // Clear existing content
+    articlesList.innerHTML = '';
 
     const articles = [
-        { title: "The Dark Triad of personality: A 10 year review", authors: "Furnham, A., Richards, S. C., & Paulhus, D. L.", year: 2013, journal: "Social and Personality Psychology Compass", doi: "10.1111/spc3.12018" },
-        // ... (other articles)
+        {
+            title: "The Dark Triad of Personality: A 10 Year Review",
+            authors: "Furnham, A., Richards, S. C., & Paulhus, D. L.",
+            year: 2013,
+            journal: "Social and Personality Psychology Compass",
+            doi: "10.1111/spc3.12018"
+        },
+        {
+            title: "The Dark Triad and the seven deadly sins",
+            authors: "Veselka, L., Giammarco, E. A., & Vernon, P. A.",
+            year: 2014,
+            journal: "Personality and Individual Differences",
+            doi: "10.1016/j.paid.2014.01.055"
+        },
+        {
+            title: "The Dark Tetrad: Structural Properties and Location in the Personality Space",
+            authors: "Book, A., Visser, B. A., & Volk, A. A.",
+            year: 2015,
+            journal: "Journal of Personality",
+            doi: "10.1111/jopy.12102"
+        }
     ];
 
     articles.forEach(article => {
@@ -447,8 +306,7 @@ function showScientificArticles() {
         li.innerHTML = `<strong>${article.title}</strong><br>
                         ${article.authors} (${article.year})<br>
                         ${article.journal}<br>
-                        ${article.doi ? `DOI: <a href="https://doi.org/${article.doi}" target="_blank">${article.doi}</a>` : 
-                          article.url ? `URL: <a href="${article.url}" target="_blank">${article.url}</a>` : ''}`;
+                        DOI: <a href="https://doi.org/${article.doi}" target="_blank">${article.doi}</a>`;
         articlesList.appendChild(li);
     });
 
@@ -472,5 +330,20 @@ window.onclick = function(event) {
 // Initialize event listeners and other setup
 document.addEventListener('DOMContentLoaded', () => {
     initializeDarkMode();
-    // Add other initialization code here
+    setupEventListeners();
 });
+
+// Function to set up event listeners
+function setupEventListeners() {
+    document.querySelectorAll('nav a[data-assessment]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            startAssessment(e.target.dataset.assessment);
+        });
+    });
+
+    document.getElementById('statisticsLink').addEventListener('click', showStatisticsOptions);
+    document.getElementById('historyLink').addEventListener('click', showHistoryAndBackground);
+    document.getElementById('showScientificArticles').addEventListener('click', showScientificArticles);
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+}
