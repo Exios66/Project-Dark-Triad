@@ -4,24 +4,23 @@
     "description": "Comprehensive Personality Assessments Web Application",
     "main": "server.js",
     "scripts": {
-        "start": "node build.js && node server.js",
-        "dev": "nodemon server.js",
+        "start": "node server.js",
+        "dev": "npx nodemon server.js",
         "test": "jest",
         "build": "node build.js"
     },
     "dependencies": {
         "bcryptjs": "^2.4.3",
         "dotenv": "^16.4.5",
-        "express": "^2.5.11",
-        "express-rate-limit": "^5.5.1",
+        "express": "^4.18.2",
+        "express-rate-limit": "^7.1.5",
         "jsonwebtoken": "^9.0.2",
         "node-cache": "^5.1.2",
-        "sqlite": "^5.1.1",
-        "sqlite3": "^5.1.6",
-        "winston": "^3.10.0"
+        "better-sqlite3": "^8.0.0",
+        "winston": "^3.15.0"
     },
     "devDependencies": {
-        "jest": "^29.0.0",
-        "nodemon": "^3.0.1"
+        "jest": "^29.7.0",
+        "nodemon": "^3.1.7"
     }
 }

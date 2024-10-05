@@ -331,8 +331,37 @@ window.onclick = function(event) {
 document.addEventListener('DOMContentLoaded', () => {
     const content = document.getElementById('content');
     const nav = document.querySelector('nav');
+    const darkModeToggle = document.getElementById('darkModeToggle');
     let token = localStorage.getItem('token');
 
+    // Function to update navigation based on authentication status
+    function updateNavigation() {
+        if (token) {
+            nav.innerHTML = `
+                <ul>
+                    <li><a href="#" id="home">Home</a></li>
+                    <li><a href="#" id="assessments">Assessments</a></li>
+                    <li><a href="#" id="results">Results</a></li>
+                    <li><a href="#" id="logout">Logout</a></li>
+                </ul>
+            `;
+        } else {
+            nav.innerHTML = `
+                <ul>
+                    <li><a href="#" id="home">Home</a></li>
+                    <li><a href="#" id="register">Register</a></li>
+                    <li><a href="#" id="login">Login</a></li>
+                </ul>
+            `;
+        }
+    }
+
+    // Dark mode toggle
+    darkModeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+
+    // Navigation event listener
     nav.addEventListener('click', (e) => {
         e.preventDefault();
         if (e.target.tagName === 'A') {
@@ -341,52 +370,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Function to load pages
     function loadPage(page) {
-        switch(page) {
+        switch (page) {
             case 'home':
-                content.innerHTML = '<h2>Welcome to Project Dark Triad</h2><p>Explore various psychological assessments to gain insights into different personality traits and models.</p>';
+                content.innerHTML = '<h2>Welcome to Project Dark Triad</h2><p>Explore your personality traits through our comprehensive assessments.</p>';
                 break;
             case 'register':
-                content.innerHTML = `
-                    <h2>Register</h2>
-                    <form id="registerForm">
-                        <input type="text" id="username" placeholder="Username" required>
-                        <input type="email" id="email" placeholder="Email" required>
-                        <input type="password" id="password" placeholder="Password" required>
-                        <button type="submit">Register</button>
-                    </form>
-                `;
-                document.getElementById('registerForm').addEventListener('submit', register);
+                showRegistrationForm();
                 break;
             case 'login':
-                content.innerHTML = `
-                    <h2>Login</h2>
-                    <form id="loginForm">
-                        <input type="email" id="loginEmail" placeholder="Email" required>
-                        <input type="password" id="loginPassword" placeholder="Password" required>
-                        <button type="submit">Login</button>
-                    </form>
-                `;
-                document.getElementById('loginForm').addEventListener('submit', login);
+                showLoginForm();
                 break;
             case 'assessments':
-                if (!token) {
-                    content.innerHTML = '<h2>Assessments</h2><p>Please log in to view available assessments.</p>';
-                } else {
-                    fetchAssessments();
-                }
+                if (token) fetchAssessments();
+                else content.innerHTML = '<p>Please login to view assessments.</p>';
                 break;
             case 'results':
-                if (!token) {
-                    content.innerHTML = '<h2>Results</h2><p>Please log in to view your results.</p>';
-                } else {
-                    fetchResults();
-                }
+                if (token) fetchResults();
+                else content.innerHTML = '<p>Please login to view your results.</p>';
+                break;
+            case 'logout':
+                logout();
                 break;
         }
     }
 
-    async function register(e) {
+    // Registration form
+    function showRegistrationForm() {
+        content.innerHTML = `
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+        `;
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    }
+
+    // Login form
+    function showLoginForm() {
+        content.innerHTML = `
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        `;
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    }
+
+    // Handle registration
+    async function handleRegister(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const email = document.getElementById('email').value;
@@ -395,119 +433,119 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, email, password }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
             });
             const data = await response.json();
-            if (response.ok) {
-                alert('Registration successful!');
+            if (data.auth) {
                 token = data.token;
                 localStorage.setItem('token', token);
+                updateNavigation();
                 loadPage('home');
-            } else {
-                alert(`Registration failed: ${data.message}`);
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during registration.');
+            console.error('Registration error:', error);
         }
     }
 
-    async function login(e) {
+    // Handle login
+    async function handleLogin(e) {
         e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
         try {
             const response = await fetch('/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
             });
             const data = await response.json();
-            if (response.ok) {
-                alert('Login successful!');
+            if (data.auth) {
                 token = data.token;
                 localStorage.setItem('token', token);
+                updateNavigation();
                 loadPage('home');
-            } else {
-                alert(`Login failed: ${data.message}`);
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during login.');
+            console.error('Login error:', error);
         }
     }
 
+    // Fetch assessments
     async function fetchAssessments() {
         try {
             const response = await fetch('/api/assessments', {
-                headers: {
-                    'x-access-token': token
-                }
+                headers: { 'x-access-token': token }
             });
             const assessments = await response.json();
-            let html = '<h2>Available Assessments</h2><ul>';
-            assessments.forEach(assessment => {
-                html += `<li><a href="#" class="assessment" data-id="${assessment.assessment_id}">${assessment.assessment_name}</a></li>`;
-            });
-            html += '</ul>';
-            content.innerHTML = html;
-
-            document.querySelectorAll('.assessment').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    startAssessment(e.target.dataset.id);
-                });
-            });
+            displayAssessments(assessments);
         } catch (error) {
-            console.error('Error:', error);
-            content.innerHTML = '<h2>Assessments</h2><p>Error loading assessments. Please try again later.</p>';
+            console.error('Error fetching assessments:', error);
         }
     }
 
+    // Display assessments
+    function displayAssessments(assessments) {
+        let html = '<h2>Available Assessments</h2><ul>';
+        assessments.forEach(assessment => {
+            html += `<li><a href="#" data-id="${assessment.assessment_id}">${assessment.assessment_name}</a></li>`;
+        });
+        html += '</ul>';
+        content.innerHTML = html;
+
+        // Add event listeners to assessment links
+        document.querySelectorAll('#content ul a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const assessmentId = e.target.dataset.id;
+                startAssessment(assessmentId);
+            });
+        });
+    }
+
+    // Start an assessment
     async function startAssessment(assessmentId) {
         try {
             const response = await fetch(`/api/assessment/${assessmentId}/questions`, {
-                headers: {
-                    'x-access-token': token
-                }
+                headers: { 'x-access-token': token }
             });
             const questions = await response.json();
-            let html = `<h2>${questions[0].assessment_name}</h2><form id="assessmentForm">`;
-            questions.forEach(question => {
-                html += `
-                    <div>
-                        <p>${question.question_text}</p>
-                        <input type="range" min="1" max="5" value="3" class="slider" id="q${question.question_id}">
-                        <div class="slider-labels">
-                            <span>Strongly Disagree</span>
-                            <span>Strongly Agree</span>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '<button type="submit">Submit</button></form>';
-            content.innerHTML = html;
-
-            document.getElementById('assessmentForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                submitAssessment(assessmentId, questions);
-            });
+            displayQuestions(questions, assessmentId);
         } catch (error) {
-            console.error('Error:', error);
-            content.innerHTML = '<h2>Assessment</h2><p>Error loading assessment. Please try again later.</p>';
+            console.error('Error fetching questions:', error);
         }
     }
 
-    async function submitAssessment(assessmentId, questions) {
+    // Display questions
+    function displayQuestions(questions, assessmentId) {
+        let html = `<h2>Assessment</h2><form id="assessmentForm" data-id="${assessmentId}">`;
+        questions.forEach(question => {
+            html += `
+                <div class="question">
+                    <p>${question.question_text}</p>
+                    <input type="range" min="1" max="5" value="3" class="slider" id="q${question.question_id}" data-trait="${question.trait_name}">
+                    <div class="slider-labels">
+                        <span>Strongly Disagree</span>
+                        <span>Strongly Agree</span>
+                    </div>
+                </div>
+            `;
+        });
+        html += '<button type="submit">Submit Assessment</button></form>';
+        content.innerHTML = html;
+
+        document.getElementById('assessmentForm').addEventListener('submit', (e) => handleAssessmentSubmit(e, questions));
+    }
+
+    // Handle assessment submission
+    async function handleAssessmentSubmit(e, questions) {
+        e.preventDefault();
+        const assessmentId = e.target.dataset.id;
         const answers = questions.map(question => ({
             questionId: question.question_id,
-            value: parseInt(document.getElementById(`q${question.question_id}`).value)
+            value: parseInt(document.getElementById(`q${question.question_id}`).value),
+            trait: question.trait_name
         }));
 
         try {
@@ -520,51 +558,93 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ answers })
             });
             const result = await response.json();
-            if (response.ok) {
-                alert('Assessment submitted successfully!');
-                loadPage('results');
-            } else {
-                alert(`Submission failed: ${result.message}`);
-            }
+            displayResults(result);
         } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while submitting the assessment.');
+            console.error('Error submitting assessment:', error);
         }
     }
 
+    // Display assessment results
+    function displayResults(result) {
+        let html = '<h2>Assessment Results</h2>';
+        html += `<p>Total Score: ${result.totalScore}</p>`;
+        html += '<h3>Trait Scores:</h3><ul>';
+        for (const [trait, details] of Object.entries(result.resultDetails)) {
+            html += `<li>${trait}: ${details.average.toFixed(2)}</li>`;
+        }
+        html += '</ul>';
+        content.innerHTML = html;
+    }
+
+    // Fetch user's past results
     async function fetchResults() {
         try {
             const response = await fetch('/api/user/results', {
-                headers: {
-                    'x-access-token': token
-                }
+                headers: { 'x-access-token': token }
             });
             const results = await response.json();
-            let html = '<h2>Your Assessment Results</h2>';
-            if (results.length === 0) {
-                html += '<p>You have not completed any assessments yet.</p>';
-            } else {
-                results.forEach(result => {
-                    html += `
-                        <div class="result">
-                            <h3>${result.assessment_name}</h3>
-                            <p>Total Score: ${result.total_score}</p>
-                            <p>Completed on: ${new Date(result.completed_at).toLocaleString()}</p>
-                            <details>
-                                <summary>Detailed Results</summary>
-                                <pre>${JSON.stringify(JSON.parse(result.result_details), null, 2)}</pre>
-                            </details>
-                        </div>
-                    `;
-                });
-            }
-            content.innerHTML = html;
+            displayPastResults(results);
         } catch (error) {
-            console.error('Error:', error);
-            content.innerHTML = '<h2>Results</h2><p>Error loading results. Please try again later.</p>';
+            console.error('Error fetching results:', error);
         }
     }
 
-    // Load the home page by default
+    // Display past results
+    function displayPastResults(results) {
+        let html = '<h2>Your Past Results</h2>';
+        if (results.length === 0) {
+            html += '<p>You have not completed any assessments yet.</p>';
+        } else {
+            html += '<ul>';
+            results.forEach(result => {
+                html += `
+                    <li>
+                        <h3>${result.assessment_name}</h3>
+                        <p>Date: ${new Date(result.completed_at).toLocaleDateString()}</p>
+                        <p>Total Score: ${result.total_score}</p>
+                        <button class="view-details" data-result='${JSON.stringify(result)}'>View Details</button>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+        }
+        content.innerHTML = html;
+
+        // Add event listeners to "View Details" buttons
+        document.querySelectorAll('.view-details').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const result = JSON.parse(e.target.dataset.result);
+                displayResultDetails(result);
+            });
+        });
+    }
+
+    // Display detailed results for a specific assessment
+    function displayResultDetails(result) {
+        let html = `<h2>${result.assessment_name} Details</h2>`;
+        html += `<p>Date: ${new Date(result.completed_at).toLocaleDateString()}</p>`;
+        html += `<p>Total Score: ${result.total_score}</p>`;
+        html += '<h3>Trait Scores:</h3><ul>';
+        const details = JSON.parse(result.result_details);
+        for (const [trait, score] of Object.entries(details)) {
+            html += `<li>${trait}: ${score.average.toFixed(2)}</li>`;
+        }
+        html += '</ul>';
+        html += '<button id="backToResults">Back to Results</button>';
+        content.innerHTML = html;
+
+        document.getElementById('backToResults').addEventListener('click', fetchResults);
+    }
+
+    // Logout function
+    function logout() {
+        token = null;
+        localStorage.removeItem('token');
+        updateNavigation();
+        loadPage('home');
+    }
+
+    // Initial setup
+    updateNavigation();
     loadPage('home');
 });
