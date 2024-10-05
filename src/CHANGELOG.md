@@ -3,12 +3,14 @@
 ## [0.0.4] - 2024-10-05
 
 ### Added
+
 - Detailed interpretation modal for assessment results
 - Complete HEXACO assessment with 60 validated questions
 - Complete OCEAN (Big Five) assessment with 50 validated questions
 - New styles for interpretation modal and button
 
 ### Changed
+
 - Updated index.html to include new interpretation modal
 - Enhanced styles.css with modal and button styles
 - Expanded script.js with full question sets for HEXACO and OCEAN assessments
@@ -16,6 +18,7 @@
 ## [0.0.3] - 2024-10-05
 
 ### Added in [v0.0.3]
+
 - Modified index.html: Improved structure and content
 - Updated package-lock.json and package.json: Revised dependencies
 - Enhanced script.js: Added new features and optimized existing code
@@ -26,6 +29,7 @@
 ## [0.0.2] - 2024-10-05
 
 ### Added
+
 - Update to version 1.2.5
 - feat: Update version to 1.1.5
 - v1.1.4
@@ -70,4 +74,5 @@
 ## [0.0.1] - 2024-10-04
 
 ### Added in [v0.0.1]
+
 - Initial project setup

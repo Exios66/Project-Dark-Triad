@@ -293,7 +293,7 @@ function getTraitExplanation(trait) {
         'Conscientiousness': 'Tendency to be organized, diligent, and careful.',
         'Openness to Experience': 'Aesthetic appreciation, inquisitiveness, creativity, and unconventionality.',
         'Neuroticism': 'Tendency to experience negative emotions such as anxiety, anger, or depression.',
-        'Hypochondriasis': 'Excessive preoccupation with one's health.',
+        'Hypochondriasis': 'Excessive preoccupation with one\'s health.',
         'Hysteria': 'Tendency to develop physical symptoms in response to stress or conflict.',
         'Psychopathic Deviate': 'Difficulty following rules and conforming to social norms.',
         'Masculinity-Femininity': 'Traditional gender roles and interests.',
