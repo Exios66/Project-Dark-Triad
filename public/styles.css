@@ -34,11 +34,12 @@ body.dark-mode {
 
 /* Base Typography */
 body {
-    font-family: Arial, sans-serif;
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.8;
     background-color: var(--background-color);
     color: var(--text-color);
+    font-weight: 300;
+    letter-spacing: 0.02em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -49,9 +50,12 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Header Styles */
 header {
-    background: #333;
+    background-color: var(--primary-color);
     color: #fff;
     padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Dark Mode Toggle */
@@ -78,31 +82,28 @@ header {
 }
 
 /* Navigation Styles */
-nav {
+#mainNav {
     background-color: var(--secondary-color);
     padding: 0.5rem;
 }
 
-nav ul {
+#mainNav ul {
     list-style-type: none;
     display: flex;
     justify-content: center;
 }
 
-nav ul li {
-    display: inline;
+#mainNav ul li {
     margin-right: 10px;
 }
 
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
+#mainNav ul li a {
     color: #fff;
     text-decoration: none;
 }
 
-nav ul li a:hover {
-    color: var(--accent-color);
+#mainNav ul li a:hover {
+    text-decoration: underline;
 }
 
 /* Main Content Styles */
@@ -122,6 +123,7 @@ main {
     background-color: var(--background-color);
     color: var(--primary-color);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 999;
@@ -129,23 +131,25 @@ main {
 }
 
 #content {
-    display: none;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+#content.visible {
+    opacity: 1;
 }
 
 /* Assessment Styles */
-/* Assessments Section */
 #assessments {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
-    justify-content: center;
 }
 
 .assessment {
     background-color: var(--assessment-bg);
     border-radius: 10px;
     padding: 1.5rem;
-    margin-bottom: 1rem;
     box-shadow: 0 4px 6px var(--assessment-shadow);
     display: flex;
     flex-direction: column;
@@ -159,14 +163,22 @@ main {
 }
 
 .assessment h2 {
+    font-size: 1.5rem;
     margin-bottom: 1rem;
-    text-align: center;
     color: var(--primary-color);
 }
 
 .assessment p {
+    font-size: 1rem;
     margin-bottom: 1.5rem;
-    flex-grow: 1;
+    color: var(--text-color);
+}
+
+.assessment .citation {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
 }
 
 /* Buttons */
@@ -178,117 +190,81 @@ button {
     cursor: pointer;
     border-radius: 5px;
     font-size: 1rem;
-    transition: background-color 0.3s, transform 0.1s;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
     width: 100%;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-button[type="submit"]:hover {
+button:hover {
     background-color: var(--button-hover-color);
-    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 button:active {
     transform: scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Hidden Class */
-.hidden {
-    display: none;
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.5);
 }
 
 /* Progress Bar */
 #progressBarContainer {
     width: 100%;
-    margin-top: 10px;
+    background-color: #e0e0e0;
+    margin: 20px 0;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 #progressBar {
     width: 0;
     height: 20px;
     background-color: var(--primary-color);
-    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .assessment,
+    button,
+    #progressBar {
+        transition: none;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .assessment {
+        background-color: var(--assessment-bg-dark, #2a2a2a);
+    }
+
+    button {
+        background-color: var(--primary-color-dark, #bb86fc);
+    }
+
+    button:hover {
+        background-color: var(--button-hover-color-dark, #9965f4);
+    }
+}
+
+#progressBar {
+    width: 0;
+    height: 20px;
+    background-color: var(--primary-color);
     text-align: center;
     line-height: 20px;
     color: white;
+    transition: width 0.3s ease-in-out;
+    font-size: 12px;
+    font-weight: bold;
 }
 
-/* Results Styles */
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: var(--assessment-bg);
-    border-radius: 5px;
-    padding: 1rem;
-    margin-top: 1rem;
-    box-shadow: 0 2px 5px var(--assessment-shadow);
-}
-
-.view-details:hover {
-    background-color: var(--button-hover-color);
-}
-
-#results p {
-    margin-bottom: 0.5rem;
-}
-
-.trait-explanation {
-    cursor: help;
-    margin-left: 5px;
-}
-
-#backToResults:hover {
-    background-color: var(--button-hover-color);
-}
-
-/* Footer Styles */
-footer {
-    background-color: var(--nav-bg);
-    color: var(--nav-text);
-    text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.footer-section {
-    flex: 1;
-    margin: 0.5rem 1rem;
-}
-
-.footer-section h3 {
-    margin-bottom: 0.5rem;
-}
-
-.footer-section ul {
-    list-style-type: none;
-}
-
-.footer-section ul li {
-    margin-bottom: 0.5rem;
-}
-
-.footer-section a {
-    color: var(--nav-text);
-}
-
-.footer-section a:hover {
-    text-decoration: underline;
-}
-
-/* Modal */
+/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -298,69 +274,117 @@ footer {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
 }
 
 .modal-content {
     background-color: var(--assessment-bg);
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
+    margin: 10% auto;
+    padding: 30px;
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
     width: 80%;
     max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    transform: translateY(-50px);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
 }
 
 .close {
-    color: #aaa;
+    color: var(--text-color);
     float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .close:hover,
 .close:focus {
-    color: #000;
+    color: var(--primary-color);
     text-decoration: none;
+}
+
+/* Stroop Task Styles */
+#stroopWord {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 30px 0;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#stroopButtons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+#stroopButtons button {
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    color: #fff;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Media Queries */
-@media (max-width: 600px) {
-    nav ul {
-        flex-direction: column;
-    }
-
-    nav ul li {
-        margin: 5px 0;
-    }
-
-    #darkModeToggle {
-        top: 70px;
-    }
-
-    button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .assessment {
-        padding: 1rem;
-    }
-
-    .analysis-buttons button {
-        flex: 1 1 100%;
-    }
+#stroopButtons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+#stroopProgress {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    margin-top: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#stroopProgress div {
+    height: 100%;
+    background-color: var(--secondary-color);
+    transition: width 0.3s ease-in-out;
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    nav ul {
+    #mainNav ul {
         flex-direction: column;
         align-items: center;
     }
 
-    nav ul li {
-        margin: 5px 0;
+    #mainNav ul li {
+        margin: 10px 0;
     }
 
     main {
@@ -372,11 +396,25 @@ footer {
     }
 
     .assessment {
-        padding: 1rem;
+        padding: 1.5rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+
+    #stroopButtons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #stroopButtons button {
+        width: 80%;
     }
 }
 
-/* Add these styles for the new modal and button */
+/* Interpretation Modal Styles */
 #interpretationModal {
     display: none;
     position: fixed;
@@ -386,18 +424,54 @@ footer {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#interpretationModal.show {
+    display: block;
+    opacity: 1;
 }
 
 #interpretationModal .modal-content {
     background-color: var(--assessment-bg);
     margin: 5% auto;
-    padding: 20px;
+    padding: 30px;
     border: 1px solid var(--primary-color);
-    width: 80%;
+    border-radius: 10px;
+    width: 90%;
     max-width: 800px;
     max-height: 80vh;
     overflow-y: auto;
+    transform: translateY(-50px);
+    transition: transform 0.3s ease;
+}
+
+#interpretationModal.show .modal-content {
+    transform: translateY(0);
+}
+
+#interpretationChart {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+#interpretationText {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+#citationsList {
+    margin-top: 20px;
+    padding-left: 20px;
+}
+
+#citationsList li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text-color);
 }
 
 #interpretationContent h3 {
@@ -414,14 +488,14 @@ button.show-interpretation {
     background-color: var(--secondary-color);
 }
 
-button.show-interpretation:hover {
-    background-color: var(--button-hover-color);
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Add these styles for the Stroop task */
-#stroopTask {
-    text-align: center;
-    padding: 20px;
+.fadeIn {
+    animation: fadeIn 0.5s forwards;
 }
 
 #stroopWord {
@@ -443,9 +517,9 @@ button.show-interpretation:hover {
     padding: 10px 20px;
     font-size: 18px;
     border: none;
-    border-radius: 5px;
+    font-size: 1.5rem;
+    color: #fff;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 #stroopButtons button:hover {
@@ -470,7 +544,6 @@ button.show-interpretation:hover {
 #stroopResults {
     margin-top: 20px;
 }
-
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -488,3 +561,217 @@ button.show-interpretation:hover {
 .fadeOut {
     animation: fadeOut 0.5s forwards;
 }
+/* ===== Reset and Base Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:root {
+    --primary-color: #4a4a4a;
+    --secondary-color: #0077be;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --border-color: #dddddd;
+    --hover-color: #f5f5f5;
+}
+
+.dark-mode {
+    --primary-color: #bb86fc;
+    --secondary-color: #03dac6;
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --border-color: #333333;
+    --hover-color: #1f1f1f;
+}
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Layout ===== */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* ===== Buttons ===== */
+button {
+    padding: 0.5rem 1rem;
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: var(--button-hover-color);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* ===== Forms ===== */
+input, textarea, select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(var(--secondary-color-rgb), 0.2);
+}
+
+/* ===== Utility Classes ===== */
+/* Hide elements visually while keeping them accessible to screen readers */
+.hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Center align text */
+.text-center {
+    text-align: center;
+}
+
+/* Flexbox utility for centering content */
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive image */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Clearfix for floated elements */
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Margin and padding utilities */
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mt-3 { margin-top: 3rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.mb-3 { margin-bottom: 3rem; }
+.ml-1 { margin-left: 1rem; }
+.mr-1 { margin-right: 1rem; }
+.mx-1 { margin-left: 1rem; margin-right: 1rem; }
+.my-1 { margin-top: 1rem; margin-bottom: 1rem; }
+.p-1 { padding: 1rem; }
+.pt-1 { padding-top: 1rem; }
+.pb-1 { padding-bottom: 1rem; }
+.pl-1 { padding-left: 1rem; }
+.pr-1 { padding-right: 1rem; }
+.px-1 { padding-left: 1rem; padding-right: 1rem; }
+.py-1 { padding-top: 1rem; padding-bottom: 1rem; }
+
+/* Flexbox utilities */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-content-center { justify-content: center; }
+.align-items-center { align-items: center; }
+
+/* Text utilities */
+.text-bold { font-weight: bold; }
+.text-italic { font-style: italic; }
+.text-underline { text-decoration: underline; }
+
+/* Color utilities */
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--secondary-color); }
+.bg-primary { background-color: var(--primary-color); }
+.bg-secondary { background-color: var(--secondary-color); }
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+    .hidden-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hidden-desktop {
+        display: none !important;
+    }
+}
+
+/* Accessibility utilities */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Citations:
+1. CSS-Tricks. (2021). A Complete Guide to Flexbox. https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+2. MDN Web Docs. (2021). CSS Display. https://developer.mozilla.org/en-US/docs/Web/CSS/display
+3. W3C. (2021). CSS Flexible Box Layout Module Level 1. https://www.w3.org/TR/css-flexbox-1/
+4. Bootstrap. (2021). Utility API. https://getbootstrap.com/docs/5.0/utilities/api/
+5. WebAIM. (2021). CSS in Action: Invisible Content Just for Screen Reader Users. https://webaim.org/techniques/css/invisiblecontent/
+*/
