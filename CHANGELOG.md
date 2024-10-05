@@ -1,9 +1,61 @@
 # Changelog
 
-## [0.0.1] - 2024-10-04
+## [0.0.5] - 2024-10-06
+
+### Added
+- Implemented Stroop Task feature
+  - Added new section in index.html for Stroop Task
+  - Created styles for Stroop Task in styles.css
+  - Implemented Stroop Task functionality in script.js
+- Enhanced user interface with animations for Stroop Task
+- Added progress bar for Stroop Task
+- Included results display for Stroop Task performance
+
+### Changed
+- Updated navigation to include Stroop Task
+- Modified switchSection function to accommodate Stroop Task
+
+## [0.0.4] - 2024-10-05
 
 ### Added
 
+- Detailed interpretation modal for assessment results
+- Complete HEXACO assessment with 60 validated questions
+- Complete OCEAN (Big Five) assessment with 50 validated questions
+- New styles for interpretation modal and button
+
+### Changed
+
+- Updated index.html to include new interpretation modal
+- Enhanced styles.css with modal and button styles
+- Expanded script.js with full question sets for HEXACO and OCEAN assessments
+
+## [0.0.3] - 2024-10-05
+
+### Added in [v0.0.3]
+
+- Modified index.html: Improved structure and content
+- Updated package-lock.json and package.json: Revised dependencies
+- Enhanced script.js: Added new features and optimized existing code
+- Improved server.js: Implemented server-side changes
+- Updated src/CHANGELOG.md: Documented recent changes
+- Refined styles.css: Enhanced visual appearance and responsiveness
+
+## [0.0.2] - 2024-10-05
+
+### Added
+
+- Update to version 1.2.5
+- feat: Update version to 1.1.5
+- v1.1.4
+- v1.0.4
+- v1.0.3
+- v 1.0.2
+- Updated build script and deployment workflow
+- Updated build process and file structure
+- Merge remote-tracking branch 'origin/main' into Exios66-gh-pages
+- [v1.0.0] Initial release of Dark Triad Assessments web application
+- [1.0.1] alpha
 - v 1.0.0 a
 - Update styles.css
 - Update script.js
@@ -34,3 +86,8 @@
 - Create styles.css
 - Create Script.js [v0.0.1]
 
+## [0.0.1] - 2024-10-04
+
+### Added in [v0.0.1]
+
+- Initial project setup
