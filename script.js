@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeSettings();
     initializeLiteratureReview();
     initializeBackgroundAndHistory();
+    initializeResponsiveMenu();
 });
 
 // Function to initialize dark mode
@@ -881,6 +882,10 @@ function switchSection(sectionId) {
     sections.forEach(section => {
         document.getElementById(section).classList.toggle('hidden', section !== sectionId);
     });
+    smoothScrollTo(sectionId);
+
+    // Close the mobile menu after section switch
+    document.getElementById('mainNav').classList.remove('active');
 }
 
 // Update the navigation event listeners
@@ -894,106 +899,151 @@ document.querySelectorAll('nav a').forEach(link => {
 
 // Add these functions to your existing script.js file
 
-function calculateStats() {
-    const scoresInput = document.getElementById('scores').value;
-    const group2Input = document.getElementById('group2').value;
-    const scores = scoresInput.split(',').map(Number).filter(n => !isNaN(n));
-    const group2 = group2Input.split(',').map(Number).filter(n => !isNaN(n));
+function performAnalysis() {
+    const scores1 = getScoresFromTextarea('scores');
+    const scores2 = getScoresFromTextarea('group2');
+    const analysisType = document.getElementById('analysisType').value;
+    const chartType = document.getElementById('chartType').value;
 
-    if (scores.length === 0) {
-        alert("Please enter valid scores.");
+    if (scores1.length === 0) {
+        alert("Please enter valid scores for Group 1.");
         return;
     }
 
-    const mean = calculateMean(scores);
-    const median = calculateMedian(scores);
-    const variance = calculateVariance(scores, mean);
-    const stddev = Math.sqrt(variance);
-    const skewness = calculateSkewness(scores, mean, stddev);
-    const kurtosis = calculateKurtosis(scores, mean, stddev);
-    const cronbachAlpha = calculateCronbachAlpha(scores);
-    const correlation = group2.length > 0 ? calculateCorrelation(scores, group2) : 'N/A';
-    const tTestResult = group2.length > 0 ? performTTest(scores, group2) : 'N/A';
+    let results = '';
+    let chartData = {};
 
-    document.getElementById('mean').innerText = mean.toFixed(2);
-    document.getElementById('median').innerText = median.toFixed(2);
-    document.getElementById('variance').innerText = variance.toFixed(2);
-    document.getElementById('stddev').innerText = stddev.toFixed(2);
-    document.getElementById('skewness').innerText = skewness.toFixed(2);
-    document.getElementById('kurtosis').innerText = kurtosis.toFixed(2);
-    document.getElementById('cronbach').innerText = cronbachAlpha.toFixed(2);
-    document.getElementById('correlation').innerText = typeof correlation === 'number' ? correlation.toFixed(2) : correlation;
-    document.getElementById('ttest').innerText = tTestResult;
-
-    renderHistogram(scores);
-}
-
-// Include all the statistical calculation functions here (calculateMean, calculateMedian, etc.)
-// ... (copy all the functions from the provided HTML file)
-
-function renderHistogram(scores) {
-    const ctx = document.getElementById('chartCanvas').getContext('2d');
-    const binSize = 10;
-    const minScore = Math.min(...scores);
-    const maxScore = Math.max(...scores);
-    const numBins = Math.ceil((maxScore - minScore) / binSize);
-    
-    const bins = Array(numBins).fill(0);
-    scores.forEach(score => {
-        const binIndex = Math.floor((score - minScore) / binSize);
-        bins[binIndex]++;
-    });
-
-    const labels = Array.from({ length: numBins }, (_, i) => `${minScore + i * binSize}-${minScore + (i + 1) * binSize - 1}`);
-
-    if (window.myChart) {
-        window.myChart.destroy();
+    switch (analysisType) {
+        case 'descriptive':
+            results = calculateDescriptiveStats(scores1);
+            chartData = prepareChartData(scores1, chartType);
+            break;
+        case 'ttest':
+            if (scores2.length === 0) {
+                alert("T-Test requires scores for both groups.");
+                return;
+            }
+            results = performTTest(scores1, scores2);
+            chartData = prepareChartData([scores1, scores2], chartType);
+            break;
+        case 'correlation':
+            if (scores2.length === 0) {
+                alert("Correlation analysis requires scores for both groups.");
+                return;
+            }
+            results = calculateCorrelation(scores1, scores2);
+            chartData = prepareChartData([scores1, scores2], chartType);
+            break;
+        case 'reliability':
+            results = calculateCronbachAlpha(scores1);
+            chartData = prepareChartData(scores1, chartType);
+            break;
     }
 
-    window.myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
+    displayResults(results);
+    createChart(chartData, chartType);
+}
+
+function getScoresFromTextarea(id) {
+    return document.getElementById(id).value
+        .split(',')
+        .map(Number)
+        .filter(n => !isNaN(n));
+}
+
+function calculateDescriptiveStats(scores) {
+    const mean = math.mean(scores);
+    const median = math.median(scores);
+    const std = math.std(scores);
+    const min = math.min(scores);
+    const max = math.max(scores);
+
+    return `
+        <p><strong>Mean:</strong> ${mean.toFixed(2)}</p>
+        <p><strong>Median:</strong> ${median.toFixed(2)}</p>
+        <p><strong>Standard Deviation:</strong> ${std.toFixed(2)}</p>
+        <p><strong>Minimum:</strong> ${min}</p>
+        <p><strong>Maximum:</strong> ${max}</p>
+    `;
+}
+
+function performTTest(group1, group2) {
+    const mean1 = math.mean(group1);
+    const mean2 = math.mean(group2);
+    const var1 = math.variance(group1);
+    const var2 = math.variance(group2);
+    const n1 = group1.length;
+    const n2 = group2.length;
+
+    const pooledSE = math.sqrt((var1/n1) + (var2/n2));
+    const t = (mean1 - mean2) / pooledSE;
+    const df = n1 + n2 - 2;
+
+    return `
+        <p><strong>T-Statistic:</strong> ${t.toFixed(4)}</p>
+        <p><strong>Degrees of Freedom:</strong> ${df}</p>
+        <p><strong>Mean Difference:</strong> ${(mean1 - mean2).toFixed(4)}</p>
+    `;
+}
+
+function calculateCorrelation(group1, group2) {
+    const correlation = math.correlation(group1, group2);
+    return `<p><strong>Correlation Coefficient:</strong> ${correlation.toFixed(4)}</p>`;
+}
+
+function calculateCronbachAlpha(scores) {
+    const itemVariances = scores.map(score => math.variance(score));
+    const totalVariance = math.variance(scores.flat());
+    const k = scores.length;
+    const alpha = (k / (k - 1)) * (1 - (math.sum(itemVariances) / totalVariance));
+    return `<p><strong>Cronbach's Alpha:</strong> ${alpha.toFixed(4)}</p>`;
+}
+
+function prepareChartData(scores, chartType) {
+    if (chartType === 'scatter') {
+        return {
             datasets: [{
-                label: 'Frequency of Scores',
-                data: bins,
-                backgroundColor: 'rgba(0, 123, 255, 0.5)',
-                borderColor: 'rgba(0, 123, 255, 1)',
-                borderWidth: 1
+                label: 'Scores',
+                data: scores[0].map((value, index) => ({ x: value, y: scores[1][index] })),
+                backgroundColor: 'rgba(75, 192, 192, 0.6)'
             }]
-        },
+        };
+    } else {
+        return {
+            labels: Array.from({ length: Math.max(...scores.map(s => s.length)) }, (_, i) => i + 1),
+            datasets: Array.isArray(scores[0]) 
+                ? scores.map((s, i) => ({
+                    label: `Group ${i + 1}`,
+                    data: s,
+                    backgroundColor: `rgba(75, 192, 192, ${0.6 - i * 0.2})`
+                }))
+                : [{
+                    label: 'Scores',
+                    data: scores,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                }]
+        };
+    }
+}
+
+function displayResults(results) {
+    document.getElementById('analysisResults').innerHTML = results;
+}
+
+function createChart(data, chartType) {
+    const ctx = document.getElementById('resultChart').getContext('2d');
+    if (window.resultChart) {
+        window.resultChart.destroy();
+    }
+    window.resultChart = new Chart(ctx, {
+        type: chartType === 'histogram' ? 'bar' : chartType,
+        data: data,
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Score Ranges',
-                        font: {
-                            size: 16
-                        }
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Frequency',
-                        font: {
-                            size: 16
-                        }
-                    },
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        font: {
-                            size: 16
-                        }
-                    }
-                }
+                x: { title: { display: true, text: 'Values' } },
+                y: { title: { display: true, text: 'Frequency' } }
             }
         }
     });
@@ -1003,15 +1053,6 @@ function renderHistogram(scores) {
 function smoothScrollTo(elementId) {
     const element = document.getElementById(elementId);
     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// Update the switchSection function to include smooth scrolling
-function switchSection(sectionId) {
-    const sections = ['assessments', 'literature', 'background', 'psychometric'];
-    sections.forEach(section => {
-        document.getElementById(section).classList.toggle('hidden', section !== sectionId);
-    });
-    smoothScrollTo(sectionId);
 }
 
 // Add this function to show a loading indicator
@@ -1082,3 +1123,43 @@ document.addEventListener('keydown', (e) => {
         closeModal();
     }
 });
+
+// Add this to your existing DOMContentLoaded event listener
+document.addEventListener("DOMContentLoaded", () => {
+    // ... (existing code) ...
+    initializeResponsiveMenu();
+});
+
+// Add this new function
+function initializeResponsiveMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+
+    menuToggle.addEventListener('click', () => {
+        mainNav.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked
+    mainNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mainNav.classList.remove('active');
+        });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('#mainNav') && !event.target.closest('#menuToggle')) {
+            mainNav.classList.remove('active');
+        }
+    });
+}
+
+// Add a function to handle window resize events
+function handleResize() {
+    if (window.innerWidth > 768) {
+        document.getElementById('mainNav').classList.remove('active');
+    }
+}
+
+// Add event listener for window resize
+window.addEventListener('resize', handleResize);

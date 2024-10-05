@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>Dark Triad Assessments</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Dark Triad Assessments Web Application"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.1/math.min.js"></script>
@@ -21,8 +21,9 @@
     <div id="content" class="hidden">
         <header>
             <h1>Dark Triad Assessments</h1>
+            <button id="menuToggle" aria-label="Toggle Menu">☰</button>
         </header>
-        <nav>
+        <nav id="mainNav">
             <ul>
                 <li><a href="#assessments">Assessments</a></li>
                 <li><a href="#literature">Literature Review</a></li>
@@ -86,31 +87,42 @@
 
             <section id="psychometric" class="hidden">
                 <h2>Comprehensive Psychometric and Statistical Evaluation</h2>
-                <div class="container">
-                    <label for="scores">Enter Scores (comma-separated):</label>
-                    <textarea id="scores" rows="4" placeholder="e.g., 85, 90, 88, 93, 76, 95"></textarea>
+                <div class="calculator-container">
+                    <div class="input-section">
+                        <label for="scores">Enter Scores (comma-separated):</label>
+                        <textarea id="scores" rows="4" placeholder="e.g., 85, 90, 88, 93, 76, 95"></textarea>
 
-                    <label for="group2">Enter Scores for Group 2 (Optional, for T-Test):</label>
-                    <textarea id="group2" rows="4" placeholder="e.g., 80, 85, 78, 92, 74, 89"></textarea>
+                        <label for="group2">Enter Scores for Group 2 (Optional, for comparison):</label>
+                        <textarea id="group2" rows="4" placeholder="e.g., 80, 85, 78, 92, 74, 89"></textarea>
 
-                    <button onclick="calculateStats()">Evaluate</button>
-                </div>
+                        <div class="analysis-options">
+                            <label for="analysisType">Select Analysis Type:</label>
+                            <select id="analysisType">
+                                <option value="descriptive">Descriptive Statistics</option>
+                                <option value="ttest">T-Test (requires Group 2)</option>
+                                <option value="correlation">Correlation (requires Group 2)</option>
+                                <option value="reliability">Reliability (Cronbach's Alpha)</option>
+                            </select>
 
-                <div class="results" id="results">
-                    <h3>Statistical Results:</h3>
-                    <p><strong>Mean:</strong> <span id="mean"></span></p>
-                    <p><strong>Median:</strong> <span id="median"></span></p>
-                    <p><strong>Variance:</strong> <span id="variance"></span></p>
-                    <p><strong>Standard Deviation:</strong> <span id="stddev"></span></p>
-                    <p><strong>Skewness:</strong> <span id="skewness"></span></p>
-                    <p><strong>Kurtosis:</strong> <span id="kurtosis"></span></p>
-                    <p><strong>Cronbach's Alpha (Reliability):</strong> <span id="cronbach"></span></p>
-                    <p><strong>Correlation Coefficient (Pearson's r):</strong> <span id="correlation"></span></p>
-                    <p><strong>T-Test (if Group 2 is entered):</strong> <span id="ttest"></span></p>
-                </div>
+                            <label for="chartType">Select Chart Type:</label>
+                            <select id="chartType">
+                                <option value="bar">Bar Chart</option>
+                                <option value="histogram">Histogram</option>
+                                <option value="scatter">Scatter Plot (requires Group 2)</option>
+                                <option value="boxplot">Box Plot</option>
+                            </select>
+                        </div>
 
-                <div class="chart-container">
-                    <canvas id="chartCanvas"></canvas>
+                        <button onclick="performAnalysis()">Perform Analysis</button>
+                    </div>
+
+                    <div class="results-section">
+                        <h3>Results:</h3>
+                        <div id="analysisResults"></div>
+                        <div class="chart-container">
+                            <canvas id="resultChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </section>
 

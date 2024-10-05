@@ -1,4 +1,113 @@
-/* styles.css */
+/* Add these styles at the beginning of your CSS file */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+}
+
+/* Responsive layout */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Responsive navigation */
+#menuToggle {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #menuToggle {
+        display: block;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        z-index: 1;
+        background: none;
+        border: none;
+        font-size: 1.5em;
+        color: var(--text-color);
+    }
+
+    #mainNav {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: var(--background-color);
+        padding: 10px;
+    }
+
+    #mainNav.active {
+        display: block;
+    }
+
+    #mainNav ul {
+        flex-direction: column;
+    }
+
+    #mainNav li {
+        margin: 10px 0;
+    }
+}
+
+/* Responsive intro screen */
+#intro {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    padding: 20px;
+}
+
+#intro h1 {
+    font-size: 2.5em;
+}
+
+@media (max-width: 768px) {
+    #intro h1 {
+        font-size: 2em;
+    }
+}
+
+/* Responsive assessment layout */
+.assessment {
+    margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    .assessment {
+        display: flex;
+        align-items: center;
+    }
+
+    .assessment button {
+        margin-left: 20px;
+    }
+}
+
+/* Responsive chart */
+.chart-container {
+    position: relative;
+    height: 50vh;
+    width: 100%;
+}
 
 /* ===== Reset and Base Styles ===== */
 
@@ -447,72 +556,73 @@ footer {
 #psychometric {
     background-color: var(--assessment-bg);
     border-radius: 5px;
-    padding: 1rem;
+    padding: 2rem;
     margin-bottom: 1rem;
     box-shadow: 0 2px 5px var(--assessment-shadow);
 }
 
-#psychometric h2 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
+.calculator-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
 }
 
-#psychometric .container {
-    margin-bottom: 20px;
+.input-section, .results-section {
+    flex: 1;
+    min-width: 300px;
 }
 
-#psychometric label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: var(--text-color);
-}
-
-#psychometric textarea {
+.input-section textarea, .input-section select {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    box-sizing: border-box;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
     border: 1px solid var(--assessment-shadow);
     border-radius: 4px;
     background-color: var(--background-color);
     color: var(--text-color);
-    resize: vertical;
-    min-height: 100px;
 }
 
-#psychometric button {
+.input-section button {
     width: 100%;
-    padding: 12px;
+    padding: 0.75rem;
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
-#psychometric button:hover {
+.input-section button:hover {
     background-color: var(--button-hover-color);
 }
 
-#psychometric .results {
-    margin-top: 15px;
-    padding: 10px;
+.analysis-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.analysis-options label {
+    flex-basis: 100%;
+}
+
+.analysis-options select {
+    flex: 1;
+}
+
+.results-section {
     background-color: var(--assessment-bg);
-    border-radius: 8px;
+    padding: 1rem;
+    border-radius: 4px;
     box-shadow: 0 2px 4px var(--assessment-shadow);
 }
 
 .chart-container {
-    position: relative;
+    margin-top: 1rem;
     height: 300px;
-    width: 100%;
-    margin-top: 30px;
-    border: 1px solid var(--assessment-shadow);
-    border-radius: 8px;
-    padding: 15px;
-    background-color: var(--assessment-bg);
 }
 
 /* Add these styles to improve readability and responsiveness */
