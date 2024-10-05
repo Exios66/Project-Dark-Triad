@@ -35,6 +35,7 @@ body.dark-mode {
 /* Base Typography */
 body {
     font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif;
     line-height: 1.6;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -46,19 +47,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1rem;
 }
 
-/* Links */
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-/* ===== Layout Styles ===== */
-
-/* Header */
+/* Header Styles */
 header {
     background-color: var(--primary-color);
     color: #fff;
@@ -89,7 +78,7 @@ header {
     background-color: var(--button-hover-color);
 }
 
-/* Navigation */
+/* Navigation Styles */
 nav {
     background-color: var(--secondary-color);
     padding: 0.5rem;
@@ -102,19 +91,22 @@ nav ul {
 }
 
 nav ul li {
-    margin: 0 10px;
+    display: inline;
+    margin-right: 10px;
 }
 
 nav ul li a {
     color: #fff;
     text-decoration: none;
+    color: #fff;
+    text-decoration: none;
 }
 
 nav ul li a:hover {
-    text-decoration: underline;
+    color: var(--accent-color);
 }
 
-/* Main Content */
+/* Main Content Styles */
 main {
     padding: 2rem;
     max-width: 1200px;
@@ -137,6 +129,7 @@ main {
     transition: opacity 1s;
 }
 
+/* Assessment Styles */
 /* Assessments Section */
 #assessments {
     display: grid;
@@ -187,7 +180,7 @@ button {
     text-align: center;
 }
 
-button:hover {
+button[type="submit"]:hover {
     background-color: var(--button-hover-color);
     transform: scale(1.05);
 }
@@ -204,9 +197,7 @@ button:active {
 /* Progress Bar */
 #progressBarContainer {
     width: 100%;
-    background-color: #ddd;
-    border-radius: 5px;
-    margin-bottom: 1rem;
+    margin-top: 10px;
 }
 
 #progressBar {
@@ -219,30 +210,15 @@ button:active {
     color: white;
 }
 
-/* Assessment Questions */
-#assessmentQuestions {
-    background-color: var(--assessment-bg);
-    padding: 1rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px var(--assessment-shadow);
-    margin-bottom: 1rem;
+/* Results Styles */
+ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-.question h3 {
-    margin-bottom: 0.5rem;
-}
-
-.question p {
-    margin-bottom: 1rem;
-}
-
-.options label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-/* Results */
-#results {
+li {
+    margin-bottom: 20px;
+    padding: 10px;
     background-color: var(--assessment-bg);
     border-radius: 5px;
     padding: 1rem;
@@ -250,8 +226,8 @@ button:active {
     box-shadow: 0 2px 5px var(--assessment-shadow);
 }
 
-#results h2 {
-    margin-bottom: 1rem;
+.view-details:hover {
+    background-color: var(--button-hover-color);
 }
 
 #results p {
@@ -263,37 +239,16 @@ button:active {
     margin-left: 5px;
 }
 
-/* Chart */
-#resultsChart {
-    max-width: 100%;
-    margin-top: 1rem;
+#backToResults:hover {
+    background-color: var(--button-hover-color);
 }
 
-/* Statistical Analysis Options */
-#statisticsOptions h2 {
-    margin-bottom: 1rem;
-}
-
-.analysis-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 1rem;
-}
-
-.analysis-buttons button {
-    flex: 1 1 calc(33% - 20px);
-}
-
-#dataUpload {
-    margin-bottom: 1rem;
-}
-
-/* Footer */
+/* Footer Styles */
 footer {
     background-color: var(--nav-bg);
     color: var(--nav-text);
-    padding: 1.5rem 0;
+    text-align: center;
+    padding: 1rem;
     margin-top: 2rem;
 }
 
@@ -371,16 +326,23 @@ footer {
 @media (max-width: 600px) {
     nav ul {
         flex-direction: column;
-        align-items: center;
     }
 
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
+    nav ul li {
+        margin: 5px 0;
     }
 
-    .footer-section {
-        margin: 1rem 0;
+    #darkModeToggle {
+        top: 70px;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .assessment {
+        padding: 1rem;
     }
 
     .analysis-buttons button {
