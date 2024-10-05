@@ -1,31 +1,31 @@
+// script.js
+
 /* Dark Mode Toggle */
 const darkModeToggle = document.getElementById('darkModeToggle');
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-const currentTheme = localStorage.getItem('theme');
-if (currentTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-    darkModeToggle.textContent = '☀️';
-} else if (currentTheme === 'light') {
-    document.body.classList.remove('dark-mode');
-    darkModeToggle.textContent = '🌙';
-} else if (prefersDarkScheme.matches) {
-    document.body.classList.add('dark-mode');
-    darkModeToggle.textContent = '☀️';
-}
-
-darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    let theme = 'light';
-    if (document.body.classList.contains('dark-mode')) {
-        theme = 'dark';
+function initializeDarkMode() {
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark' || (currentTheme !== 'light' && prefersDarkScheme.matches)) {
+        document.body.classList.add('dark-mode');
         darkModeToggle.textContent = '☀️';
     } else {
+        document.body.classList.remove('dark-mode');
         darkModeToggle.textContent = '🌙';
     }
-    localStorage.setItem('theme', theme);
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     updateChartColors();
-});
+}
+
+darkModeToggle.addEventListener('click', toggleDarkMode);
+
+initializeDarkMode();
 
 /* Function to Update Chart Colors Based on Theme */
 function updateChartColors() {
@@ -38,16 +38,22 @@ function updateChartColors() {
         window.resultsChart.update();
     }
 }
+
 /* Hide Introduction Screen After 3 Seconds */
-setTimeout(() => {
+function hideIntroduction() {
     const intro = document.getElementById('intro');
-    intro.style.transition = 'opacity 1s'; // Ensure the transition is applied
+    if (!intro) return;
+
+    intro.style.transition = 'opacity 1s';
     intro.style.opacity = '0';
 
     intro.addEventListener('transitionend', () => {
-        intro.style.display = 'none'; // Wait for the opacity transition to finish
+        intro.style.display = 'none';
     });
-}, 3000);
+}
+
+setTimeout(hideIntroduction, 3000);
+
 /* Assessment Data */
 const assessments = {
     sdt3: [
@@ -84,8 +90,14 @@ function startAssessment(assessment) {
 /* Function to Display a Question */
 function showQuestion() {
     const questionContainer = document.getElementById('assessmentQuestions');
-    const question = assessments[currentAssessment][currentQuestionIndex];
-    const totalQuestions = assessments[currentAssessment].length;
+    const currentAssessmentQuestions = assessments[currentAssessment];
+    if (!currentAssessmentQuestions || currentQuestionIndex >= currentAssessmentQuestions.length) {
+        console.error('Invalid assessment or question index');
+        return;
+    }
+
+    const question = currentAssessmentQuestions[currentQuestionIndex];
+    const totalQuestions = currentAssessmentQuestions.length;
 
     questionContainer.innerHTML = `
         <div class="question">
@@ -134,7 +146,7 @@ function resetAutoAdvance() {
 /* Function to Get Scale Label */
 function getScaleLabel(value) {
     const labels = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
-    return labels[value - 1];
+    return labels[value - 1] || '';
 }
 
 /* Function to Submit an Answer */
@@ -161,6 +173,8 @@ function submitAnswer() {
 /* Function to Update Progress Bar */
 function updateProgressBar() {
     const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+
     const progress = ((currentQuestionIndex + 1) / assessments[currentAssessment].length) * 100;
     progressBar.style.width = `${progress}%`;
     progressBar.textContent = `${Math.round(progress)}%`;
@@ -208,7 +222,9 @@ function getTraitExplanation(trait) {
 
 /* Function to Create Results Chart */
 function createChart(traits, scores) {
-    const ctx = document.getElementById('resultsChart').getContext('2d');
+    const ctx = document.getElementById('resultsChart');
+    if (!ctx) return;
+
     const isDarkMode = document.body.classList.contains('dark-mode');
     const textColor = isDarkMode ? '#ecf0f1' : '#333';
 
@@ -452,3 +468,9 @@ window.onclick = function(event) {
         modal.style.display = 'none';
     }
 }
+
+// Initialize event listeners and other setup
+document.addEventListener('DOMContentLoaded', () => {
+    initializeDarkMode();
+    // Add other initialization code here
+});
