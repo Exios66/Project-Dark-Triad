@@ -1,1 +1,125 @@
-/* Add your CSS styles for the Home component here */
+/* CSS styles for the Home component */
+
+/* Importing necessary fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap');
+
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Header styles */
+header {
+    background: var(--nav-bg);
+    color: var(--nav-text);
+    padding: 1rem;
+    text-align: center;
+}
+
+h1 {
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    margin: 0;
+    font-size: 2.5rem;
+    color: var(--heading-color);
+}
+
+/* Navigation styles */
+nav {
+    background-color: var(--nav-bg);
+    padding: 0.5rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+nav ul li a {
+    color: var(--nav-text);
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    color: var(--accent-color);
+}
+
+/* Main content styles */
+main {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--assessment-bg);
+    box-shadow: 0 0 10px var(--assessment-shadow);
+}
+
+/* Button styles */
+button {
+    background-color: var(--button-color);
+    color: var(--button-text-color);
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: var(--button-hover-color);
+}
+
+/* Dark mode toggle */
+#darkModeToggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Responsive design */
+@media only screen and (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
+    nav ul {
+        flex-direction: column;
+    }
+
+    nav ul li {
+        margin: 5px 0;
+    }
+
+    #darkModeToggle {
+        top: 70px;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    h4 { font-size: 1.25rem; }
+    h5 { font-size: 1.1rem; }
+    h6 { font-size: 1rem; }
+}
