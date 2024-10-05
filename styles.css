@@ -64,20 +64,35 @@ header {
     color: #fff;
     text-align: center;
     padding: 1rem;
-    position: relative;
+    /* Remove the 'position: relative;' if it exists */
 }
 
 /* Dark Mode Toggle */
+#darkModeToggleContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
 #darkModeToggle {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: transparent;
-    border: 2px solid #fff;
+    background-color: var(--primary-color);
     color: #fff;
-    padding: 5px 10px;
-    border-radius: 15px;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
     cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#darkModeToggle:hover {
+    background-color: var(--button-hover-color);
+}
+
+#darkModeToggle:active {
+    transform: scale(0.95);
 }
 
 /* Navigation */
@@ -391,4 +406,35 @@ footer {
     background-color: var(--primary-color);
     width: 100%;
     transition: width 1s linear;
+}
+
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    /* ... other existing styles ... */
+}
+
+/* Add these styles to your existing CSS file */
+
+#literature, #background {
+    background-color: var(--assessment-bg);
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px var(--assessment-shadow);
+}
+
+#literature h3, #background h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+#literature ul, #background p {
+    margin-bottom: 1rem;
+}
+
+#literature li, #background p {
+    margin-bottom: 0.5rem;
 }

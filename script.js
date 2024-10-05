@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeDarkMode();
     initializeModals();
     initializeSettings();
+    initializeLiteratureReview();
+    initializeBackgroundAndHistory();
 });
 
 // Function to initialize dark mode
@@ -774,3 +776,118 @@ async function getComparisonData(type) {
         return null;
     }
 }
+
+// Function to animate footer
+function animateFooter() {
+    const footer = document.querySelector('footer');
+    let position = 0;
+    let direction = 1;
+
+    function move() {
+        position += direction;
+        footer.style.transform = `translateY(${position}px)`;
+
+        if (position >= 10 || position <= 0) {
+            direction *= -1;
+        }
+
+        requestAnimationFrame(move);
+    }
+
+    move();
+}
+
+// Function to dynamically resize footer based on content
+function resizeFooter() {
+    const footer = document.querySelector('footer');
+    const content = footer.querySelector('#showScientificArticles');
+    
+    const observer = new ResizeObserver(() => {
+        footer.style.height = `${content.offsetHeight + 20}px`;
+    });
+
+    observer.observe(content);
+}
+
+// Initialize footer animations and dynamic sizing
+document.addEventListener('DOMContentLoaded', () => {
+    animateFooter();
+    resizeFooter();
+});
+
+function initializeLiteratureReview() {
+    const keyStudiesList = document.getElementById('keyStudiesList');
+    const recentDevelopmentsList = document.getElementById('recentDevelopmentsList');
+    const critiquesList = document.getElementById('critiquesList');
+
+    const keyStudies = [
+        { title: "The Dark Triad of personality: A 10 year review", authors: "Furnham, A., Richards, S. C., & Paulhus, D. L.", year: 2013, summary: "Comprehensive review of Dark Triad research, highlighting its impact on various fields of psychology." },
+        { title: "The Dark Triad and the seven deadly sins", authors: "Veselka, L., Giammarco, E. A., & Vernon, P. A.", year: 2014, summary: "Exploration of the relationship between Dark Triad traits and traditional concepts of sin in personality psychology." },
+        { title: "The Dark Triad and normal personality traits", authors: "Paulhus, D. L., & Williams, K. M.", year: 2002, summary: "Original study introducing the Dark Triad concept and its relationship to the Big Five personality traits." }
+    ];
+
+    const recentDevelopments = [
+        { title: "The Dark Tetrad: Distinguishing the Dark Triad from Sadism", authors: "Chabrol, H., Van Leeuwen, N., Rodgers, R., & Séjourné, N.", year: 2009, summary: "Introduction of sadism as a potential fourth dark personality trait." },
+        { title: "Trolls just want to have fun", authors: "Buckels, E. E., Trapnell, P. D., & Paulhus, D. L.", year: 2014, summary: "Study linking Dark Triad traits to online trolling behavior." },
+        { title: "The Dark Triad and workplace behavior", authors: "O'Boyle Jr, E. H., Forsyth, D. R., Banks, G. C., & McDaniel, M. A.", year: 2012, summary: "Meta-analysis of Dark Triad traits' impact on workplace behavior and job performance." }
+    ];
+
+    const critiques = [
+        { title: "The Dark Triad: Facilitating a Short-Term Mating Strategy in Men", authors: "Jonason, P. K., Li, N. P., Webster, G. D., & Schmitt, D. P.", year: 2009, summary: "Controversial study suggesting evolutionary advantages of Dark Triad traits in short-term mating strategies." },
+        { title: "The Dark Triad and impulsivity: A meta-analytic review", authors: "Malesza, M., & Ostaszewski, P.", year: 2016, summary: "Critique of the assumed relationship between Dark Triad traits and impulsivity." },
+        { title: "Is the Dark Triad common factor distinct from low Honesty-Humility?", authors: "Book, A., Visser, B. A., & Volk, A. A.", year: 2015, summary: "Questioning the uniqueness of the Dark Triad construct in relation to existing personality models." }
+    ];
+
+    function populateList(list, items) {
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${item.title}</strong> (${item.authors}, ${item.year})<br>${item.summary}`;
+            list.appendChild(li);
+        });
+    }
+
+    populateList(keyStudiesList, keyStudies);
+    populateList(recentDevelopmentsList, recentDevelopments);
+    populateList(critiquesList, critiques);
+}
+
+function initializeBackgroundAndHistory() {
+    document.getElementById('originsContent').textContent = `
+        The concept of the Dark Triad was first introduced by Delroy L. Paulhus and Kevin M. Williams in 2002. 
+        They identified three distinct but related personality traits: Machiavellianism, narcissism, and psychopathy. 
+        These traits were already well-known in psychology, but Paulhus and Williams were the first to group them 
+        together and study their interrelationships.
+    `;
+
+    document.getElementById('evolutionContent').textContent = `
+        Since its introduction, the Dark Triad has become a popular topic in personality psychology. 
+        Researchers have explored its relationships with various behaviors, attitudes, and life outcomes. 
+        In recent years, some researchers have proposed expanding the triad to a "Dark Tetrad" by including sadism. 
+        Others have investigated "lighter" versions of these traits, suggesting a spectrum of dark personalities.
+    `;
+
+    document.getElementById('impactContent').textContent = `
+        The Dark Triad has had a significant impact on both psychology and society. In psychology, it has 
+        influenced research in personality, social psychology, and organizational behavior. In society, 
+        awareness of these traits has grown, influencing discussions about leadership, relationships, and 
+        social media behavior. However, it's important to note that having dark traits doesn't necessarily 
+        make someone "evil," and these traits can sometimes be adaptive in certain contexts.
+    `;
+}
+
+// Function to switch between sections
+function switchSection(sectionId) {
+    const sections = ['assessments', 'literature', 'background'];
+    sections.forEach(section => {
+        document.getElementById(section).classList.toggle('hidden', section !== sectionId);
+    });
+}
+
+// Update the navigation event listeners
+document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = e.target.getAttribute('href').slice(1);
+        switchSection(sectionId);
+    });
+});

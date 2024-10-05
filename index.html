@@ -15,17 +15,18 @@
     <div id="intro">
         <h1>Welcome to Dark Triad Assessments</h1>
     </div>
+    <div id="darkModeToggleContainer">
+        <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
+    </div>
     <div id="content" class="hidden">
         <header>
             <h1>Dark Triad Assessments</h1>
-            <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
         </header>
         <nav>
             <ul>
-                <li><a href="#sdt3">SDT3</a></li>
-                <li><a href="#dirtyDozen">Dirty Dozen</a></li>
-                <li><a href="#sdt4">SDT4</a></li>
-                <li><a href="#machIV">MACH IV</a></li>
+                <li><a href="#assessments">Assessments</a></li>
+                <li><a href="#literature">Literature Review</a></li>
+                <li><a href="#background">Background & History</a></li>
             </ul>
         </nav>
         <div id="settingsMenu">
@@ -35,7 +36,7 @@
             </label>
         </div>
         <main>
-            <div id="assessments">
+            <section id="assessments">
                 <div id="sdt3" class="assessment">
                     <h2>Short Dark Triad (SDT3)</h2>
                     <p>The SDT3 assesses three personality traits: Machiavellianism, Narcissism, and Psychopathy.</p>
@@ -56,7 +57,32 @@
                     <p>The MACH IV is a test of Machiavellianism, measuring a person's willingness to manipulate others.</p>
                     <button onclick="startAssessment('machIV')">Start MACH IV Assessment</button>
                 </div>
-            </div>
+            </section>
+
+            <section id="literature" class="hidden">
+                <h2>Literature Review</h2>
+                <div id="literatureContent">
+                    <h3>Key Studies</h3>
+                    <ul id="keyStudiesList"></ul>
+                    <h3>Recent Developments</h3>
+                    <ul id="recentDevelopmentsList"></ul>
+                    <h3>Critiques and Controversies</h3>
+                    <ul id="critiquesList"></ul>
+                </div>
+            </section>
+
+            <section id="background" class="hidden">
+                <h2>Background & History</h2>
+                <div id="backgroundContent">
+                    <h3>Origins of the Dark Triad</h3>
+                    <p id="originsContent"></p>
+                    <h3>Evolution of the Concept</h3>
+                    <p id="evolutionContent"></p>
+                    <h3>Impact on Psychology and Society</h3>
+                    <p id="impactContent"></p>
+                </div>
+            </section>
+
             <div id="progressBarContainer" class="hidden">
                 <div id="progressBar"></div>
             </div>

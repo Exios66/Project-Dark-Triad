@@ -1,7 +1,28 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 const app = express();
-const http = require('http');
+const port = process.env.PORT || 3000;
+
+// Middleware
+app.use(helmet()); // Helps secure your app by setting various HTTP headers
+app.use(compression()); // Compress all routes
+app.use(cors()); // Enable CORS for all routes
+app.use(express.json()); // Parse JSON bodies
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
 // Serve static files from the root directory
 app.use(express.static(path.join(__dirname)));
@@ -11,31 +32,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Function to find an available port
-function findAvailablePort(startPort) {
-  return new Promise((resolve, reject) => {
-    const server = http.createServer();
-    server.listen(startPort, () => {
-      const { port } = server.address();
-      server.close(() => {
-        resolve(port);
-      });
-    });
-    server.on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        resolve(findAvailablePort(startPort + 1));
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 // Start the server
-findAvailablePort(3000).then((port) => {
-  app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-  });
-}).catch((err) => {
-  console.error('Failed to find an available port:', err);
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
