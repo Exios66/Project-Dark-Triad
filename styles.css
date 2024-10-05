@@ -7,42 +7,37 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 /* Root Variables */
 :root {
-    --primary-color: #00ffff;
-    --secondary-color: #ff00ff;
-    --background-color: #f0f0f0;
-    --text-color: #333333;
-    --button-hover-color: #00cccc;
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --button-hover-color: #2980b9;
     --assessment-bg: #ffffff;
     --assessment-shadow: rgba(0, 0, 0, 0.1);
-    --nav-bg: #333333;
-    --nav-text: #ffffff;
-    --modal-bg: rgba(0, 0, 0, 0.8);
+    --transition-speed: 0.3s;
 }
 
 body.dark-mode {
-    --primary-color: #00cccc;
-    --secondary-color: #cc00cc;
-    --background-color: #1a1a1a;
-    --text-color: #f0f0f0;
-    --button-hover-color: #009999;
-    --assessment-bg: #2a2a2a;
-    --assessment-shadow: rgba(0, 255, 255, 0.1);
-    --nav-bg: #000000;
-    --nav-text: #00ffff;
-    --modal-bg: rgba(0, 0, 0, 0.9);
+    --primary-color: #2980b9;
+    --secondary-color: #27ae60;
+    --background-color: #2c3e50;
+    --text-color: #ecf0f1;
+    --button-hover-color: #3498db;
+    --assessment-bg: #34495e;
+    --assessment-shadow: rgba(255, 255, 255, 0.1);
 }
 
 /* Base Typography */
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: Arial, sans-serif;
     line-height: 1.6;
     background-color: var(--background-color);
     color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -65,24 +60,33 @@ a:hover {
 
 /* Header */
 header {
-    background-color: var(--nav-bg);
-    color: var(--nav-text);
+    background-color: var(--primary-color);
+    color: #fff;
     text-align: center;
     padding: 1rem;
-    position: relative;
 }
 
 /* Dark Mode Toggle */
-#darkModeToggle {
+#darkModeToggleContainer {
     position: fixed;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     z-index: 1000;
-    background-color: transparent;
+}
+
+#darkModeToggle {
+    background-color: var(--primary-color);
+    color: #fff;
     border: none;
-    font-size: 1.5rem;
+    padding: 10px 15px;
+    border-radius: 20px;
     cursor: pointer;
-    color: var(--primary-color);
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+#darkModeToggle:hover {
+    background-color: var(--button-hover-color);
 }
 
 /* Navigation */
@@ -95,7 +99,6 @@ nav ul {
     list-style-type: none;
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
 nav ul li {
@@ -103,7 +106,8 @@ nav ul li {
 }
 
 nav ul li a {
-    color: var(--nav-text);
+    color: #fff;
+    text-decoration: none;
 }
 
 nav ul li a:hover {
@@ -138,10 +142,8 @@ main {
     background-color: var(--assessment-bg);
     border-radius: 5px;
     padding: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     box-shadow: 0 2px 5px var(--assessment-shadow);
-    border: 1px solid var(--primary-color);
-    transition: transform 0.2s;
 }
 
 .assessment:hover {
@@ -159,12 +161,11 @@ main {
 /* Buttons */
 button {
     background-color: var(--primary-color);
-    color: var(--nav-bg);
+    color: #fff;
     border: none;
     padding: 0.5rem 1rem;
     cursor: pointer;
     border-radius: 3px;
-    font-size: 1rem;
     transition: background-color 0.3s;
 }
 
@@ -188,7 +189,7 @@ button:hover {
 #progressBar {
     width: 0;
     height: 20px;
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     border-radius: 5px;
     text-align: center;
     line-height: 20px;
@@ -222,7 +223,7 @@ button:hover {
     background-color: var(--assessment-bg);
     border-radius: 5px;
     padding: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     box-shadow: 0 2px 5px var(--assessment-shadow);
 }
 
@@ -235,8 +236,7 @@ button:hover {
 }
 
 .trait-explanation {
-    cursor: pointer;
-    font-weight: bold;
+    cursor: help;
     margin-left: 5px;
 }
 
@@ -317,26 +317,21 @@ footer {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: var(--modal-bg);
+    background-color: rgba(0,0,0,0.4);
 }
 
 .modal-content {
     background-color: var(--assessment-bg);
-    margin: 5% auto;
-    padding: 1.5rem;
-    border: 1px solid var(--primary-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
     width: 80%;
     max-width: 600px;
-    border-radius: 5px;
-    position: relative;
-    color: var(--text-color);
 }
 
 .close {
-    color: var(--primary-color);
-    position: absolute;
-    top: 10px;
-    right: 15px;
+    color: #aaa;
+    float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
@@ -344,7 +339,9 @@ footer {
 
 .close:hover,
 .close:focus {
-    color: var(--secondary-color);
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* Media Queries */
@@ -366,4 +363,61 @@ footer {
     .analysis-buttons button {
         flex: 1 1 100%;
     }
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav ul li {
+        margin: 5px 0;
+    }
+
+    main {
+        padding: 1rem;
+    }
+}
+
+/* Add these styles for the new modal and button */
+#interpretationModal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+#interpretationModal .modal-content {
+    background-color: var(--assessment-bg);
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 80%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#interpretationContent h3 {
+    color: var(--primary-color);
+    margin-top: 20px;
+}
+
+#interpretationContent p {
+    margin-bottom: 15px;
+}
+
+button.show-interpretation {
+    margin-top: 20px;
+    background-color: var(--secondary-color);
+}
+
+button.show-interpretation:hover {
+    background-color: var(--button-hover-color);
 }

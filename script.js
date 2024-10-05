@@ -83,13 +83,38 @@ const assessments = {
         // ... (Include all the MACH IV questions)
     ],
     mmpi: [
-        // ... (Include all the MMPI-style questions)
+        { question: "I like mechanics magazines.", trait: "Masculinity-Femininity" },
+        { question: "I have a good appetite.", trait: "Hypochondriasis", reversed: true },
+        { question: "I wake up fresh and rested most mornings.", trait: "Depression", reversed: true },
+        { question: "My daily life is full of things that keep me interested.", trait: "Psychasthenia", reversed: true },
+        { question: "I am sure I get a raw deal from life.", trait: "Paranoia" },
+        // Add more MMPI-style questions here (the full MMPI has 567 questions, but you might want to use a shortened version)
     ],
     hexaco: [
-        // ... (Include all the HEXACO questions)
+        { question: "I would be quite bored by a visit to an art gallery.", trait: "Openness to Experience", reversed: true },
+        { question: "I plan ahead and organize things, to avoid scrambling at the last minute.", trait: "Conscientiousness" },
+        { question: "I rarely hold a grudge, even against people who have badly wronged me.", trait: "Agreeableness" },
+        { question: "I feel reasonably satisfied with myself overall.", trait: "Extraversion" },
+        { question: "I would feel afraid if I had to travel in bad weather conditions.", trait: "Emotionality" },
+        { question: "I wouldn't use flattery to get a raise or promotion at work, even if I thought it would succeed.", trait: "Honesty-Humility" },
+        { question: "I'm interested in learning about the history and politics of other countries.", trait: "Openness to Experience" },
+        { question: "I often push myself very hard when trying to achieve a goal.", trait: "Conscientiousness" },
+        { question: "People sometimes tell me that I am too critical of others.", trait: "Agreeableness", reversed: true },
+        { question: "I rarely express my opinions in group meetings.", trait: "Extraversion", reversed: true },
+        // ... (add 50 more questions to reach a total of 60)
     ],
     ocean: [
-        // ... (Include all the OCEAN questions)
+        { question: "I am the life of the party.", trait: "Extraversion" },
+        { question: "I feel little concern for others.", trait: "Agreeableness", reversed: true },
+        { question: "I am always prepared.", trait: "Conscientiousness" },
+        { question: "I get stressed out easily.", trait: "Neuroticism" },
+        { question: "I have a rich vocabulary.", trait: "Openness" },
+        { question: "I don't talk a lot.", trait: "Extraversion", reversed: true },
+        { question: "I am interested in people.", trait: "Agreeableness" },
+        { question: "I leave my belongings around.", trait: "Conscientiousness", reversed: true },
+        { question: "I am relaxed most of the time.", trait: "Neuroticism", reversed: true },
+        { question: "I have difficulty understanding abstract ideas.", trait: "Openness", reversed: true },
+        // ... (add 40 more questions to reach a total of 50)
     ]
 };
 
@@ -205,25 +230,48 @@ function showResults() {
     document.getElementById('results').classList.remove('hidden');
     document.getElementById('resultsChart').classList.remove('hidden');
 
-    const traits = Object.keys(answers);
-    const scores = traits.map(trait => {
-        const maxScore = assessments[currentAssessment].filter(q => q.trait === trait).length * 5;
-        return (answers[trait] / maxScore) * 100;
-    });
+    let traits;
+    switch (currentAssessment) {
+        case 'hexaco':
+            traits = ['Honesty-Humility', 'Emotionality', 'Extraversion', 'Agreeableness', 'Conscientiousness', 'Openness to Experience'];
+            break;
+        case 'ocean':
+            traits = ['Openness', 'Conscientiousness', 'Extraversion', 'Agreeableness', 'Neuroticism'];
+            break;
+        case 'mmpi':
+            traits = ['Hypochondriasis', 'Depression', 'Hysteria', 'Psychopathic Deviate', 'Masculinity-Femininity', 'Paranoia', 'Psychasthenia', 'Schizophrenia', 'Hypomania', 'Social Introversion'];
+            break;
+        default:
+            traits = Object.keys(answers);
+    }
+
+    const scores = traits.map(calculateTraitScore);
 
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = `
         <h2>Your Results</h2>
         ${traits.map((trait, index) => `
             <p>${trait}: ${scores[index].toFixed(2)}% 
-            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ</span></p>
+            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ️</span></p>
         `).join('')}
         <button onclick="resetAssessment()">Take Another Assessment</button>
         <button onclick="exportResults()">Export Results</button>
         <button onclick="uploadStoredResults()" id="uploadButton">Upload Stored Results</button>
+        <button onclick="showDetailedInterpretation()">Show Detailed Interpretation</button>
     `;
 
     createChart(traits, scores);
+}
+
+// Function to calculate trait score
+function calculateTraitScore(trait) {
+    const traitQuestions = assessments[currentAssessment].filter(q => q.trait === trait);
+    const traitScores = traitQuestions.map(q => {
+        const score = answers[q.question] || 0;
+        return q.reversed ? 6 - score : score;
+    });
+    const maxScore = traitQuestions.length * 5;
+    return (math.sum(traitScores) / maxScore) * 100;
 }
 
 // Function to get explanations for traits
@@ -238,13 +286,21 @@ function getTraitExplanation(trait) {
         'Paranoia': 'Irrational and persistent thoughts of suspicion and mistrust towards others.',
         'Schizotypal Symptoms': 'Unusual perceptions, beliefs, and behaviors that may indicate a disconnection from reality.',
         'Obsessive-Compulsive Symptoms': 'Recurring, intrusive thoughts and repetitive behaviors aimed at reducing anxiety.',
-        'Honesty-Humility': 'Tendency to be fair and genuine in dealing with others.',
-        'Emotionality': 'Tendency to experience fear, anxiety, dependence, and sentimentality.',
+        'Honesty-Humility': 'Sincerity, fairness, greed avoidance, and modesty.',
+        'Emotionality': 'Fearfulness, anxiety, dependence, and sentimentality.',
         'Extraversion': 'Tendency to be sociable, lively, and cheerful.',
         'Agreeableness': 'Tendency to be forgiving, gentle, and patient.',
         'Conscientiousness': 'Tendency to be organized, diligent, and careful.',
-        'Openness to Experience': 'Appreciation for art, emotion, adventure, unusual ideas, imagination, and curiosity.',
-        'Neuroticism': 'Tendency to experience negative emotions easily, such as anxiety, anger, and depression.'
+        'Openness to Experience': 'Aesthetic appreciation, inquisitiveness, creativity, and unconventionality.',
+        'Neuroticism': 'Tendency to experience negative emotions such as anxiety, anger, or depression.',
+        'Hypochondriasis': 'Excessive preoccupation with one's health.',
+        'Hysteria': 'Tendency to develop physical symptoms in response to stress or conflict.',
+        'Psychopathic Deviate': 'Difficulty following rules and conforming to social norms.',
+        'Masculinity-Femininity': 'Traditional gender roles and interests.',
+        'Psychasthenia': 'Obsessive-compulsive traits and anxiety.',
+        'Schizophrenia': 'Unusual thoughts and experiences.',
+        'Hypomania': 'Elevated mood, increased energy, and decreased need for sleep.',
+        'Social Introversion': 'Preference for solitude and avoidance of social situations.'
     };
     return explanations[trait] || 'No explanation available.';
 }
@@ -259,72 +315,43 @@ function createChart(traits, scores) {
         window.resultsChart.destroy();
     }
 
-    // Provide options for different chart types
-    const chartType = prompt("Choose chart type: radar, bar, line", "radar") || "radar";
+    let chartType;
+    switch (currentAssessment) {
+        case 'hexaco':
+        case 'ocean':
+            chartType = 'radar';
+            break;
+        case 'mmpi':
+            chartType = 'bar';
+            break;
+        default:
+            chartType = 'radar';
+    }
 
     window.resultsChart = new Chart(ctx, {
         type: chartType,
         data: {
             labels: traits,
             datasets: [{
-                label: 'Scores',
+                label: 'Your Scores',
                 data: scores,
-                backgroundColor: chartType === 'radar' ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.6)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgb(54, 162, 235)',
-                borderWidth: 2,
-                fill: chartType !== 'bar' // For bar charts, do not fill under the line
+                borderWidth: 2
             }]
         },
         options: {
-            scales: chartType === 'radar' ? {
+            responsive: true,
+            scales: {
                 r: {
-                    angleLines: { color: gridColor },
-                    grid: { color: gridColor },
+                    angleLines: { color: isDarkMode ? '#444' : '#ccc' },
+                    grid: { color: isDarkMode ? '#444' : '#ccc' },
                     pointLabels: { color: textColor },
-                    ticks: { color: textColor },
-                    suggestedMin: 0,
-                    suggestedMax: 100,
-                    pointLabels: {
-                        color: textColor,
-                        font: {
-                            family: 'Lato, sans-serif'
-                        }
-                    },
-                    ticks: {
-                        backdropColor: 'transparent',
-                        color: textColor
-                    }
-                }
-            } : {
-                x: {
-                    ticks: {
-                        color: textColor
-                    },
-                    grid: {
-                        color: isDarkMode ? '#444' : '#ccc'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: 100,
-                    ticks: {
-                        color: textColor
-                    },
-                    grid: {
-                        color: isDarkMode ? '#444' : '#ccc'
-                    }
+                    ticks: { color: textColor, backdropColor: 'transparent' }
                 }
             },
             plugins: {
-                legend: { 
-                    labels: { color: textColor },
-                    position: 'top' 
-                },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => `${context.label}: ${context.raw.toFixed(2)}%`
-                    }
-                }
+                legend: { labels: { color: textColor } }
             }
         }
     });
@@ -811,4 +838,80 @@ function showScientificArticles() {
 function closeModal() {
     const modal = document.getElementById('articlesModal');
     modal.style.display = 'none';
+}
+
+function showDetailedInterpretation() {
+    const modal = document.getElementById('interpretationModal');
+    const modalContent = document.getElementById('interpretationContent');
+    modalContent.innerHTML = '';
+
+    const traits = Object.keys(answers);
+    const scores = traits.map(calculateTraitScore);
+
+    traits.forEach((trait, index) => {
+        const score = scores[index];
+        const interpretation = getDetailedInterpretation(trait, score);
+        modalContent.innerHTML += `
+            <h3>${trait}: ${score.toFixed(2)}%</h3>
+            <p>${interpretation}</p>
+        `;
+    });
+
+    modal.style.display = 'block';
+}
+
+function getDetailedInterpretation(trait, score) {
+    const interpretations = {
+        'Honesty-Humility': {
+            low: "You may tend to flatter others to get what you want and feel tempted to bend rules for personal profit. You might feel a sense of entitlement to special privileges.",
+            medium: "You have a balance between modesty and assertiveness. You generally play by the rules but may occasionally bend them if the stakes are high.",
+            high: "You avoid manipulating others for personal gain and feel little temptation to break rules. You're not especially motivated by social status or wealth."
+        },
+        'Emotionality': {
+            low: "You tend to feel little anxiety, even in stressful situations. You may have less need for emotional support from others and feel detached from others' feelings.",
+            medium: "You have a balanced emotional response to life. You experience normal levels of anxiety and emotional attachment to others.",
+            high: "You experience fear and anxiety fairly intensely and feel a strong need for emotional support from others. You tend to empathize deeply with others' feelings."
+        },
+        'Extraversion': {
+            low: "You tend to feel less enthusiastic and energetic about social interactions. You may prefer solitary activities and feel less comfortable in leadership roles.",
+            medium: "You have a balanced approach to social interactions. You enjoy social gatherings but also value your alone time.",
+            high: "You feel positively about yourself and are generally enthusiastic about social interactions. You're comfortable leading groups and talking to strangers."
+        },
+        'Agreeableness': {
+            low: "You may be more critical in your judgments of others and more likely to hold grudges. You might express anger readily when you feel wronged.",
+            medium: "You have a balanced approach to interpersonal relations. You can be forgiving but also stand up for yourself when necessary.",
+            high: "You tend to be forgiving and lenient in judging others. You're usually willing to compromise and cooperate with others."
+        },
+        'Conscientiousness': {
+            low: "You may approach tasks and obligations with a more relaxed attitude. You might prefer a flexible schedule and may sometimes procrastinate or leave tasks unfinished.",
+            medium: "You have a balanced approach to tasks and obligations. You're generally organized but can also be flexible when needed.",
+            high: "You tend to be very organized and disciplined, working diligently to achieve your goals. You prefer to have a set schedule and plan ahead."
+        },
+        'Openness to Experience': {
+            low: "You may prefer familiar routines and traditional ideas. You might find abstract or theoretical concepts less engaging.",
+            medium: "You have a balance between traditional and new ideas. You're open to some new experiences while also valuing familiar routines.",
+            high: "You tend to be imaginative and curious about various domains of knowledge. You're likely to enjoy abstract ideas and unconventional ways of thinking."
+        },
+        // ... Add interpretations for OCEAN traits
+    };
+
+    if (score < 33) return interpretations[trait].low;
+    if (score < 66) return interpretations[trait].medium;
+    return interpretations[trait].high;
+}
+
+// Add this to your HTML file
+`
+<div id="interpretationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeInterpretationModal()">&times;</span>
+        <h2>Detailed Interpretation</h2>
+        <div id="interpretationContent"></div>
+    </div>
+</div>
+`;
+
+// Add this function to close the interpretation modal
+function closeInterpretationModal() {
+    document.getElementById('interpretationModal').style.display = 'none';
 }
