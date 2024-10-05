@@ -38,4 +38,14 @@ additionalItems.forEach(item => {
   }
 });
 
+// Copy SQLite database file
+const dbSrcPath = path.join(__dirname, 'database.sqlite');
+const dbDestPath = path.join(rootDir, 'database.sqlite');
+if (fs.existsSync(dbSrcPath)) {
+  fs.copyFileSync(dbSrcPath, dbDestPath);
+  console.log('Copied SQLite database file to root directory');
+} else {
+  console.log('Warning: SQLite database file not found');
+}
+
 console.log('Build process completed.');
