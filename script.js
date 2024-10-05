@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize modal functionality
     initializeModals();
+
+    // Initialize Stroop task
+    initializeStroopTask();
 });
 
 // Function to toggle dark mode
@@ -600,6 +603,27 @@ function parseCSV(csv) {
 // Ensure you have included the math.js script in your HTML:
 // <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.js"></script>
 
+// Check if math.js is loaded
+if (typeof math === 'undefined') {
+    console.error('math.js is not loaded. Please include the math.js script in your HTML.');
+    // You might want to add a more user-friendly error message or handling here
+}
+
+// Alternatively, you can dynamically load math.js if it's not already included
+if (typeof math === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.js';
+    script.onload = function() {
+        console.log('math.js has been dynamically loaded');
+        // You might want to call an initialization function here
+    };
+    script.onerror = function() {
+        console.error('Failed to load math.js');
+        // Handle the error appropriately
+    };
+    document.head.appendChild(script);
+}
+
 // Implement statistical analysis functions
 function calculateCronbachAlpha(data) {
     const items = Object.keys(data[0]);
@@ -684,13 +708,15 @@ function performPsychometricAnalysis(data) {
         return {
             item: item,
             mean: math.mean(scores),
-            stdDev: math.std(scores)
+            stdDev: math.std(scores),
+            min: math.min(scores),
+            max: math.max(scores)
         };
     });
 
     let resultText = 'Item Statistics:\n';
     itemStats.forEach(stat => {
-        resultText += `Item ${stat.item}: Mean = ${stat.mean.toFixed(2)}, Std Dev = ${stat.stdDev.toFixed(2)}\n`;
+        resultText += `Item ${stat.item}:\n  Mean = ${stat.mean.toFixed(2)}\n  Std Dev = ${stat.stdDev.toFixed(2)}\n  Min = ${stat.min}\n  Max = ${stat.max}\n\n`;
     });
 
     displayAnalysisResults('Psychometric Analysis', resultText);
@@ -698,7 +724,23 @@ function performPsychometricAnalysis(data) {
 
 function performIRTAnalysis(data) {
     // Placeholder for Item Response Theory analysis
-    displayAnalysisResults('IRT Analysis', 'IRT Analysis functionality to be implemented.');
+    // This is a complex analysis that requires specialized libraries
+    // For now, we'll provide a simplified version
+    const items = Object.keys(data[0]);
+    const itemDifficulties = items.map(item => {
+        const scores = data.map(d => d[item]);
+        return {
+            item: item,
+            difficulty: 1 - (math.mean(scores) / math.max(scores))
+        };
+    });
+
+    let resultText = 'Item Difficulties (simplified IRT):\n';
+    itemDifficulties.forEach(item => {
+        resultText += `Item ${item.item}: Difficulty = ${item.difficulty.toFixed(3)}\n`;
+    });
+
+    displayAnalysisResults('Simplified IRT Analysis', resultText);
 }
 
 function performRegressionAnalysis(data) {
@@ -708,15 +750,38 @@ function performRegressionAnalysis(data) {
         return;
     }
 
-    const xValues = data.map(d => d[items[0]]);
-    const yValues = data.map(d => d[items[1]]);
+    // Allow user to select independent and dependent variables
+    const selectVars = `
+        <h3>Select Variables for Regression:</h3>
+        <p>Independent Variable: <select id="independentVar">${items.map(item => `<option value="${item}">${item}</option>`).join('')}</select></p>
+        <p>Dependent Variable: <select id="dependentVar">${items.map(item => `<option value="${item}">${item}</option>`).join('')}</select></p>
+        <button onclick="runRegression()">Run Regression</button>
+    `;
+
+    displayAnalysisResults('Regression Analysis', selectVars);
+}
+
+function runRegression() {
+    const independentVar = document.getElementById('independentVar').value;
+    const dependentVar = document.getElementById('dependentVar').value;
+
+    const xValues = data.map(d => d[independentVar]);
+    const yValues = data.map(d => d[dependentVar]);
 
     const regression = math.linearRegression(xValues, yValues);
     const rSquared = math.rSquared(xValues, yValues);
 
-    const resultText = `Regression Equation: y = ${regression.slope.toFixed(3)}x + ${regression.intercept.toFixed(3)}\nR² = ${rSquared.toFixed(3)}`;
+    const resultText = `
+        Regression Equation: y = ${regression.slope.toFixed(3)}x + ${regression.intercept.toFixed(3)}
+        R² = ${rSquared.toFixed(3)}
+        
+        Interpretation:
+        - For every one unit increase in ${independentVar}, ${dependentVar} changes by ${regression.slope.toFixed(3)} units.
+        - When ${independentVar} is 0, ${dependentVar} is predicted to be ${regression.intercept.toFixed(3)}.
+        - The R² value of ${rSquared.toFixed(3)} indicates that ${(rSquared * 100).toFixed(1)}% of the variability in ${dependentVar} can be explained by ${independentVar}.
+    `;
 
-    displayAnalysisResults('Regression Analysis', resultText);
+    displayAnalysisResults('Regression Analysis Results', resultText);
 }
 
 function performCorrelationAnalysis(data) {
@@ -732,17 +797,48 @@ function performCorrelationAnalysis(data) {
         }
     }
 
-    let resultText = 'Correlation Coefficients:\n';
+    correlations.sort((a, b) => Math.abs(b.correlation) - Math.abs(a.correlation));
+
+    let resultText = 'Correlation Coefficients (sorted by strength):\n';
     correlations.forEach(corr => {
-        resultText += `${corr.pair}: ${corr.correlation.toFixed(3)}\n`;
+        resultText += `${corr.pair}: ${corr.correlation.toFixed(3)} - ${interpretCorrelation(corr.correlation)}\n`;
     });
 
     displayAnalysisResults('Correlation Analysis', resultText);
 }
 
+function interpretCorrelation(correlation) {
+    const absCorr = Math.abs(correlation);
+    if (absCorr < 0.1) return "Negligible correlation";
+    if (absCorr < 0.3) return "Weak correlation";
+    if (absCorr < 0.5) return "Moderate correlation";
+    if (absCorr < 0.7) return "Strong correlation";
+    return "Very strong correlation";
+}
+
 function performFactorAnalysis(data) {
-    // Placeholder for Factor Analysis
-    displayAnalysisResults('Factor Analysis', 'Factor Analysis functionality to be implemented.');
+    // Factor Analysis is complex and typically requires specialized libraries
+    // This is a simplified version to demonstrate the concept
+    const items = Object.keys(data[0]);
+    const correlationMatrix = [];
+
+    for (let i = 0; i < items.length; i++) {
+        correlationMatrix[i] = [];
+        for (let j = 0; j < items.length; j++) {
+            const xValues = data.map(d => d[items[i]]);
+            const yValues = data.map(d => d[items[j]]);
+            correlationMatrix[i][j] = math.correlation(xValues, yValues);
+        }
+    }
+
+    let resultText = 'Correlation Matrix (simplified Factor Analysis):\n';
+    for (let i = 0; i < items.length; i++) {
+        resultText += items[i] + ': ' + correlationMatrix[i].map(v => v.toFixed(2)).join(', ') + '\n';
+    }
+
+    resultText += '\nInterpretation: Look for clusters of high correlations to identify potential factors.';
+
+    displayAnalysisResults('Simplified Factor Analysis', resultText);
 }
 
 function performDescriptiveStatistics(data) {
@@ -752,11 +848,25 @@ function performDescriptiveStatistics(data) {
     items.forEach(item => {
         const scores = data.map(d => d[item]);
         const mean = math.mean(scores);
+        const median = math.median(scores);
+        const mode = math.mode(scores);
         const stdDev = math.std(scores);
         const min = math.min(scores);
         const max = math.max(scores);
+        const range = max - min;
+        const skewness = math.skewness(scores);
+        const kurtosis = math.kurtosis(scores);
 
-        resultText += `Item ${item}: Mean = ${mean.toFixed(2)}, Std Dev = ${stdDev.toFixed(2)}, Min = ${min}, Max = ${max}\n`;
+        resultText += `Item ${item}:\n`;
+        resultText += `  Mean = ${mean.toFixed(2)}\n`;
+        resultText += `  Median = ${median.toFixed(2)}\n`;
+        resultText += `  Mode = ${mode.join(', ')}\n`;
+        resultText += `  Std Dev = ${stdDev.toFixed(2)}\n`;
+        resultText += `  Min = ${min}\n`;
+        resultText += `  Max = ${max}\n`;
+        resultText += `  Range = ${range}\n`;
+        resultText += `  Skewness = ${skewness.toFixed(2)}\n`;
+        resultText += `  Kurtosis = ${kurtosis.toFixed(2)}\n\n`;
     });
 
     displayAnalysisResults('Descriptive Statistics', resultText);
@@ -769,9 +879,21 @@ function displayAnalysisResults(title, results) {
         <h2>${title}</h2>
         <pre>${results}</pre>
         <button onclick="resetStatistics()">Back to Statistics Options</button>
+        <button onclick="exportAnalysisResults('${title}', \`${results}\`)">Export Results</button>
     `;
     document.getElementById('statisticsOptions').classList.add('hidden');
     resultsContainer.classList.remove('hidden');
+}
+
+// Function to export analysis results
+function exportAnalysisResults(title, results) {
+    const blob = new Blob([`${title}\n\n${results}`], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${title.replace(/\s+/g, '_').toLowerCase()}_results.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 // Function to reset statistical analysis
@@ -800,9 +922,8 @@ function hideHistoryAndBackground() {
 function initializeModals() {
     // Close modal when clicking outside of it
     window.onclick = function(event) {
-        const modal = document.getElementById('articlesModal');
-        if (event.target == modal) {
-            modal.style.display = 'none';
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
         }
     };
 }
@@ -836,8 +957,9 @@ function showScientificArticles() {
 
 // Function to close the modal
 function closeModal() {
-    const modal = document.getElementById('articlesModal');
-    modal.style.display = 'none';
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+    });
 }
 
 function showDetailedInterpretation() {
@@ -874,7 +996,7 @@ function getDetailedInterpretation(trait, score) {
         },
         'Extraversion': {
             low: "You tend to feel less enthusiastic and energetic about social interactions. You may prefer solitary activities and feel less comfortable in leadership roles.",
-            medium: "You have a balanced approach to social interactions. You enjoy social gatherings but also value your alone time.",
+            medium: "You have a balanced approach to social interactions. You can enjoy social gatherings but also value your alone time.",
             high: "You feel positively about yourself and are generally enthusiastic about social interactions. You're comfortable leading groups and talking to strangers."
         },
         'Agreeableness': {
@@ -892,12 +1014,38 @@ function getDetailedInterpretation(trait, score) {
             medium: "You have a balance between traditional and new ideas. You're open to some new experiences while also valuing familiar routines.",
             high: "You tend to be imaginative and curious about various domains of knowledge. You're likely to enjoy abstract ideas and unconventional ways of thinking."
         },
-        // ... Add interpretations for OCEAN traits
+        'Openness': {
+            low: "You tend to prefer familiar routines and conventional approaches. You may be less interested in abstract or theoretical ideas and might find comfort in traditional values.",
+            medium: "You have a balanced approach to new experiences and ideas. While you appreciate some novelty, you also value familiar and practical concepts.",
+            high: "You are likely to be curious, imaginative, and open to new experiences. You may enjoy abstract thinking, artistic pursuits, and exploring unconventional ideas."
+        },
+        'Neuroticism': {
+            low: "You tend to be emotionally stable and resilient to stress. You may rarely feel anxious or depressed and might recover quickly from setbacks.",
+            medium: "You experience a normal range of emotional ups and downs. You can handle stress reasonably well but may occasionally feel anxious or moody.",
+            high: "You may be more prone to experiencing negative emotions like anxiety, anger, or depression. You might be more sensitive to stress and take longer to recover from emotional setbacks."
+        }
     };
 
     if (score < 33) return interpretations[trait].low;
     if (score < 66) return interpretations[trait].medium;
     return interpretations[trait].high;
+}
+
+// Function to close the interpretation modal
+function closeInterpretationModal() {
+    document.getElementById('interpretationModal').style.display = 'none';
+}
+
+// Function to export interpretation results
+function exportInterpretation() {
+    const modalContent = document.getElementById('interpretationContent').innerText;
+    const blob = new Blob([modalContent], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'personality_interpretation.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 // Add this to your HTML file
@@ -907,11 +1055,124 @@ function getDetailedInterpretation(trait, score) {
         <span class="close" onclick="closeInterpretationModal()">&times;</span>
         <h2>Detailed Interpretation</h2>
         <div id="interpretationContent"></div>
+        <button onclick="exportInterpretation()">Export Interpretation</button>
     </div>
 </div>
 `;
 
-// Add this function to close the interpretation modal
-function closeInterpretationModal() {
-    document.getElementById('interpretationModal').style.display = 'none';
+// Add these variables at the top of your script.js file
+let stroopWords = ['RED', 'BLUE', 'GREEN', 'YELLOW'];
+let stroopColors = ['red', 'blue', 'green', 'yellow'];
+let stroopCurrentTrial = 0;
+let stroopTotalTrials = 20;
+let stroopStartTime;
+let stroopResults = [];
+
+// Add this function to initialize the Stroop task
+function initializeStroopTask() {
+    const nav = document.getElementById('mainNav');
+    const stroopLink = document.createElement('li');
+    stroopLink.innerHTML = '<a href="#stroopTask">Stroop Task</a>';
+    nav.appendChild(stroopLink);
+}
+
+// Call this function in your existing DOMContentLoaded event listener
+document.addEventListener("DOMContentLoaded", () => {
+    // ... (existing code)
+    initializeStroopTask();
+});
+
+// Add these functions for the Stroop task
+function startStroopTask() {
+    document.getElementById('stroopInstructions').classList.add('hidden');
+    document.getElementById('stroopGame').classList.remove('hidden');
+    stroopCurrentTrial = 0;
+    stroopResults = [];
+    nextStroopTrial();
+}
+
+function nextStroopTrial() {
+    if (stroopCurrentTrial >= stroopTotalTrials) {
+        showStroopResults();
+        return;
+    }
+
+    const wordIndex = Math.floor(Math.random() * stroopWords.length);
+    const colorIndex = Math.floor(Math.random() * stroopColors.length);
+    const word = stroopWords[wordIndex];
+    const color = stroopColors[colorIndex];
+
+    const wordElement = document.getElementById('stroopWord');
+    wordElement.textContent = word;
+    wordElement.style.color = color;
+    wordElement.classList.add('fadeIn');
+
+    const buttonsElement = document.getElementById('stroopButtons');
+    buttonsElement.innerHTML = '';
+    stroopColors.forEach(btnColor => {
+        const button = document.createElement('button');
+        button.textContent = btnColor.toUpperCase();
+        button.style.backgroundColor = btnColor;
+        button.style.color = getContrastColor(btnColor);
+        button.onclick = () => checkStroopAnswer(btnColor);
+        buttonsElement.appendChild(button);
+    });
+
+    updateStroopProgress();
+    stroopStartTime = Date.now();
+}
+
+function checkStroopAnswer(answer) {
+    const reactionTime = Date.now() - stroopStartTime;
+    const correct = answer === document.getElementById('stroopWord').style.color;
+    stroopResults.push({ correct, reactionTime });
+
+    document.getElementById('stroopWord').classList.remove('fadeIn');
+    document.getElementById('stroopWord').classList.add('fadeOut');
+
+    setTimeout(() => {
+        stroopCurrentTrial++;
+        nextStroopTrial();
+    }, 300);
+}
+
+function updateStroopProgress() {
+    const progressElement = document.getElementById('stroopProgress');
+    const progress = (stroopCurrentTrial / stroopTotalTrials) * 100;
+    progressElement.innerHTML = `<div style="width: ${progress}%"></div>`;
+}
+
+function showStroopResults() {
+    document.getElementById('stroopGame').classList.add('hidden');
+    document.getElementById('stroopResults').classList.remove('hidden');
+
+    const accuracy = stroopResults.filter(r => r.correct).length / stroopTotalTrials * 100;
+    const avgTime = stroopResults.reduce((sum, r) => sum + r.reactionTime, 0) / stroopTotalTrials;
+
+    document.getElementById('stroopAccuracy').textContent = `${accuracy.toFixed(1)}%`;
+    document.getElementById('stroopAvgTime').textContent = `${avgTime.toFixed(0)}ms`;
+}
+
+function resetStroopTask() {
+    document.getElementById('stroopResults').classList.add('hidden');
+    document.getElementById('stroopInstructions').classList.remove('hidden');
+}
+
+function getContrastColor(hexcolor) {
+    const r = parseInt(hexcolor.substr(1,2),16);
+    const g = parseInt(hexcolor.substr(3,2),16);
+    const b = parseInt(hexcolor.substr(5,2),16);
+    const yiq = ((r*299)+(g*587)+(b*114))/1000;
+    return (yiq >= 128) ? 'black' : 'white';
+}
+
+// Update the switchSection function to include the Stroop task
+function switchSection(sectionId) {
+    const sections = ['assessments', 'literature', 'background', 'psychometric', 'stroopTask'];
+    sections.forEach(section => {
+        document.getElementById(section).classList.toggle('hidden', section !== sectionId);
+    });
+    if (sectionId === 'stroopTask') {
+        resetStroopTask();
+    }
 }

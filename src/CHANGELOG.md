@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.5] - 2024-10-06
+
+### Added
+- Implemented Stroop Task feature
+  - Added new section in index.html for Stroop Task
+  - Created styles for Stroop Task in styles.css
+  - Implemented Stroop Task functionality in script.js
+- Enhanced user interface with animations for Stroop Task
+- Added progress bar for Stroop Task
+- Included results display for Stroop Task performance
+
+### Changed
+- Updated navigation to include Stroop Task
+- Modified switchSection function to accommodate Stroop Task
+
 ## [0.0.4] - 2024-10-05
 
 ### Added

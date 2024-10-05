@@ -79,6 +79,25 @@
                 <h2>Psychometric Calculator</h2>
                 <!-- Add psychometric calculator content here -->
             </section>
+            <!-- Add this inside the <main> tag, after the other sections -->
+            <section id="stroopTask" class="hidden">
+                <h2>Stroop Task</h2>
+                <div id="stroopInstructions">
+                    <p>Name the <strong>color</strong> of the word, not the word itself.</p>
+                    <button onclick="startStroopTask()">Start Task</button>
+                </div>
+                <div id="stroopGame" class="hidden">
+                    <div id="stroopWord"></div>
+                    <div id="stroopButtons"></div>
+                    <div id="stroopProgress"></div>
+                </div>
+                <div id="stroopResults" class="hidden">
+                    <h3>Results</h3>
+                    <p>Accuracy: <span id="stroopAccuracy"></span></p>
+                    <p>Average Response Time: <span id="stroopAvgTime"></span></p>
+                    <button onclick="resetStroopTask()">Try Again</button>
+                </div>
+            </section>
         </main>
         <footer>
             <button id="showScientificArticles">Scientific Articles</button>
