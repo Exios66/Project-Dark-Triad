@@ -3,151 +3,172 @@
 <head>
     <meta charset="utf-8"/>
     <title>Dark Triad Assessments</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="description" content="Dark Triad Assessments Web Application"/>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.1/math.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+    <!-- External CSS -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Math.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.js"></script>
+    <!-- MathJax Library (Optional, for displaying formulas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- External JavaScript -->
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <div id="intro">
+    <!-- Intro Section -->
+    <section id="intro">
         <h1>Welcome to Dark Triad Assessments</h1>
-    </div>
-    <div id="darkModeToggleContainer">
-        <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
-    </div>
-    <div id="content" class="hidden">
-        <header>
-            <h1>Dark Triad Assessments</h1>
-            <button id="menuToggle" aria-label="Toggle Menu">☰</button>
-        </header>
-        <nav id="mainNav">
-            <ul>
-                <li><a href="#assessments">Assessments</a></li>
-                <li><a href="#literature">Literature Review</a></li>
-                <li><a href="#background">Background & History</a></li>
-                <li><a href="#psychometric">Psychometric Calculator</a></li>
-            </ul>
-        </nav>
-        <div id="settingsMenu">
-            <label for="autoProgressToggle">
-                <input type="checkbox" id="autoProgressToggle">
-                Enable Auto-Progress (5s)
-            </label>
+    </section>
+
+    <!-- Header -->
+    <header>
+        <h1>Dark Triad Assessments</h1>
+    </header>
+
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙</button>
+
+    <!-- Navigation Menu -->
+    <nav>
+        <ul>
+            <li><a href="#sdt3">SDT3</a></li>
+            <li><a href="#dirtyDozen">Dirty Dozen</a></li>
+            <li><a href="#sdt4">SDT4</a></li>
+            <li><a href="#machIV">MACH IV</a></li>
+            <li><a href="#mmpi">MMPI-style</a></li>
+            <li><a href="#hexaco">HEXACO</a></li>
+            <li><a href="#ocean">OCEAN</a></li>
+            <li><a href="#statistics">Statistics</a></li>
+            <li><a href="#" onclick="showHistoryAndBackground()">History & Background</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Assessments -->
+        <section id="assessments">
+            <!-- SDT3 Assessment -->
+            <article id="sdt3" class="assessment">
+                <h2>Short Dark Triad (SDT3)</h2>
+                <p>The SDT3 assesses three personality traits: Machiavellianism, Narcissism, and Psychopathy.</p>
+                <button onclick="startAssessment('sdt3')">Start SDT3 Assessment</button>
+            </article>
+            <!-- Dirty Dozen Assessment -->
+            <article id="dirtyDozen" class="assessment">
+                <h2>Dirty Dozen</h2>
+                <p>The Dirty Dozen is a concise measure of the Dark Triad traits.</p>
+                <button onclick="startAssessment('dirtyDozen')">Start Dirty Dozen Assessment</button>
+            </article>
+            <!-- SDT4 Assessment -->
+            <article id="sdt4" class="assessment">
+                <h2>Short Dark Tetrad (SDT4)</h2>
+                <p>The SDT4 includes Sadism along with Machiavellianism, Narcissism, and Psychopathy.</p>
+                <button onclick="startAssessment('sdt4')">Start SDT4 Assessment</button>
+            </article>
+            <!-- MACH IV Assessment -->
+            <article id="machIV" class="assessment">
+                <h2>MACH IV</h2>
+                <p>The MACH IV measures Machiavellianism, focusing on manipulative behaviors.</p>
+                <button onclick="startAssessment('machIV')">Start MACH IV Assessment</button>
+            </article>
+            <!-- MMPI-style Assessment -->
+            <article id="mmpi" class="assessment">
+                <h2>MMPI-style Questions</h2>
+                <p>This assessment includes questions inspired by the MMPI to explore various psychological symptoms.</p>
+                <button onclick="startAssessment('mmpi')">Start MMPI-style Assessment</button>
+            </article>
+            <!-- HEXACO Assessment -->
+            <article id="hexaco" class="assessment">
+                <h2>HEXACO Personality Inventory</h2>
+                <p>The HEXACO model assesses six major dimensions of personality.</p>
+                <button onclick="startAssessment('hexaco')">Start HEXACO Assessment</button>
+            </article>
+            <!-- OCEAN Assessment -->
+            <article id="ocean" class="assessment">
+                <h2>Big Five (OCEAN)</h2>
+                <p>The Big Five personality traits: Openness, Conscientiousness, Extraversion, Agreeableness, Neuroticism.</p>
+                <button onclick="startAssessment('ocean')">Start OCEAN Assessment</button>
+            </article>
+            <!-- Statistics Option -->
+            <article id="statistics" class="assessment">
+                <h2>Statistical Analysis</h2>
+                <p>Perform statistical analyses on assessment data.</p>
+                <button onclick="showStatisticsOptions()">Go to Statistical Analysis</button>
+            </article>
+        </section>
+
+        <!-- Progress Bar -->
+        <div id="progressBarContainer" class="hidden">
+            <div id="progressBar"></div>
         </div>
-        <main>
-            <section id="assessments">
-                <div id="sdt3" class="assessment">
-                    <h2>Short Dark Triad (SDT3)</h2>
-                    <p>The SDT3 assesses three personality traits: Machiavellianism, Narcissism, and Psychopathy.</p>
-                    <button onclick="startAssessment('sdt3')">Start SDT3 Assessment</button>
-                </div>
-                <div id="dirtyDozen" class="assessment">
-                    <h2>Dirty Dozen</h2>
-                    <p>The Dirty Dozen is a brief measure of the Dark Triad personality traits.</p>
-                    <button onclick="startAssessment('dirtyDozen')">Start Dirty Dozen Assessment</button>
-                </div>
-                <div id="sdt4" class="assessment">
-                    <h2>Short Dark Tetrad (SDT4)</h2>
-                    <p>The SDT4 measures four dark personality traits: Machiavellianism, Narcissism, Psychopathy, and Sadism.</p>
-                    <button onclick="startAssessment('sdt4')">Start SDT4 Assessment</button>
-                </div>
-                <div id="machIV" class="assessment">
-                    <h2>MACH IV</h2>
-                    <p>The MACH IV is a test of Machiavellianism, measuring a person's willingness to manipulate others.</p>
-                    <button onclick="startAssessment('machIV')">Start MACH IV Assessment</button>
-                </div>
-            </section>
 
-            <section id="literature" class="hidden">
-                <h2>Literature Review</h2>
-                <div id="literatureContent">
-                    <h3>Key Studies</h3>
-                    <ul id="keyStudiesList"></ul>
-                    <h3>Recent Developments</h3>
-                    <ul id="recentDevelopmentsList"></ul>
-                    <h3>Critiques and Controversies</h3>
-                    <ul id="critiquesList"></ul>
-                </div>
-            </section>
+        <!-- Assessment Questions -->
+        <section id="assessmentQuestions" class="hidden"></section>
 
-            <section id="background" class="hidden">
-                <h2>Background & History</h2>
-                <div id="backgroundContent">
-                    <h3>Origins of the Dark Triad</h3>
-                    <p id="originsContent"></p>
-                    <h3>Evolution of the Concept</h3>
-                    <p id="evolutionContent"></p>
-                    <h3>Impact on Psychology and Society</h3>
-                    <p id="impactContent"></p>
-                </div>
-            </section>
+        <!-- Results -->
+        <section id="results" class="hidden"></section>
 
-            <section id="psychometric" class="hidden">
-                <h2>Comprehensive Psychometric and Statistical Evaluation</h2>
-                <div class="calculator-container">
-                    <div class="input-section">
-                        <label for="scores">Enter Scores (comma-separated):</label>
-                        <textarea id="scores" rows="4" placeholder="e.g., 85, 90, 88, 93, 76, 95"></textarea>
+        <!-- Chart -->
+        <canvas id="resultsChart" class="hidden"></canvas>
 
-                        <label for="group2">Enter Scores for Group 2 (Optional, for comparison):</label>
-                        <textarea id="group2" rows="4" placeholder="e.g., 80, 85, 78, 92, 74, 89"></textarea>
-
-                        <div class="analysis-options">
-                            <label for="analysisType">Select Analysis Type:</label>
-                            <select id="analysisType">
-                                <option value="descriptive">Descriptive Statistics</option>
-                                <option value="ttest">T-Test (requires Group 2)</option>
-                                <option value="correlation">Correlation (requires Group 2)</option>
-                                <option value="reliability">Reliability (Cronbach's Alpha)</option>
-                            </select>
-
-                            <label for="chartType">Select Chart Type:</label>
-                            <select id="chartType">
-                                <option value="bar">Bar Chart</option>
-                                <option value="histogram">Histogram</option>
-                                <option value="scatter">Scatter Plot (requires Group 2)</option>
-                                <option value="boxplot">Box Plot</option>
-                            </select>
-                        </div>
-
-                        <button onclick="performAnalysis()">Perform Analysis</button>
-                    </div>
-
-                    <div class="results-section">
-                        <h3>Results:</h3>
-                        <div id="analysisResults"></div>
-                        <div class="chart-container">
-                            <canvas id="resultChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div id="progressBarContainer" class="hidden">
-                <div id="progressBar"></div>
+        <!-- Statistical Analysis Options -->
+        <section id="statisticsOptions" class="hidden">
+            <h2>Statistical Analysis</h2>
+            <p>Upload your data file (.csv or .json) to perform analyses.</p>
+            <label for="dataUpload">Upload Data File:</label>
+            <input type="file" id="dataUpload" accept=".csv,.json">
+            <div class="analysis-buttons">
+                <button onclick="performAnalysis('cronbachAlpha')">Cronbach's Alpha</button>
+                <button onclick="performAnalysis('splitHalf')">Split-Half Reliability</button>
+                <button onclick="performAnalysis('anova')">ANOVA</button>
+                <button onclick="performAnalysis('interItem')">Inter-Item Validity</button>
+                <button onclick="performAnalysis('psychometric')">Psychometric Analysis</button>
+                <button onclick="performAnalysis('irt')">IRT Analysis</button>
+                <button onclick="performAnalysis('regression')">Regression Analysis</button>
+                <button onclick="performAnalysis('correlation')">Correlation Analysis</button>
+                <button onclick="performAnalysis('factorAnalysis')">Factor Analysis</button>
+                <button onclick="performAnalysis('descriptive')">Descriptive Statistics</button>
             </div>
-            <div id="assessmentQuestions" class="hidden"></div>
-            <div id="results" class="hidden"></div>
-            <canvas id="resultsChart" class="hidden"></canvas>
-        </main>
-        <footer>
-            <button id="showScientificArticles">Scientific Articles</button>
-        </footer>
-    </div>
+            <button onclick="resetStatistics()">Back to Assessments</button>
+        </section>
+
+        <!-- History and Background Content -->
+        <section id="historyContent" class="hidden">
+            <h2>History & Background</h2>
+            <p>The Dark Triad refers to three closely related personality traits: Machiavellianism, Narcissism, and Psychopathy. Understanding these traits can provide insight into certain behaviors and interpersonal dynamics.</p>
+            <!-- Additional content can be added here -->
+            <button onclick="hideHistoryAndBackground()">Back to Assessments</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="https://github.com/Exios66/dark-triad-assessments/wiki" target="_blank" rel="noopener">Repository Wiki</a></li>
+                    <li><a href="#" onclick="showScientificArticles()">Scientific Articles</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>About</h3>
+                <p>This application provides psychological assessments and statistical analysis tools for research purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Scientific Articles -->
     <div id="articlesModal" class="modal hidden">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close" onclick="closeModal()">&times;</span>
             <h2>Scientific Articles</h2>
             <ul id="articlesList"></ul>
         </div>
-    </div>
-    <script src="script.js"></script>
-    <!-- Add this just before the closing </body> tag -->
-    <div id="loadingIndicator">
-        <div class="spinner"></div>
     </div>
 </body>
 </html>
