@@ -60,12 +60,12 @@
                 </article>
                 <article id="hexaco" class="assessment">
                     <h2>HEXACO</h2>
-                    <p>Evaluates six major dimensions of personality.</p>
+                    <p>Evaluates six major dimensions of personality: Honesty-Humility, Emotionality, Extraversion, Agreeableness, Conscientiousness, and Openness to Experience.</p>
                     <button onclick="startAssessment('hexaco')">Start HEXACO Assessment</button>
                 </article>
                 <article id="ocean" class="assessment">
                     <h2>OCEAN (Big Five)</h2>
-                    <p>Assesses the five broad personality traits.</p>
+                    <p>Assesses the five broad personality traits: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.</p>
                     <button onclick="startAssessment('ocean')">Start OCEAN Assessment</button>
                 </article>
             </section>
@@ -79,7 +79,6 @@
                 <h2>Psychometric Calculator</h2>
                 <!-- Add psychometric calculator content here -->
             </section>
-            <!-- Add this inside the <main> tag, after the other sections -->
             <section id="stroopTask" class="hidden">
                 <h2>Stroop Task</h2>
                 <div id="stroopInstructions">
@@ -98,9 +97,20 @@
                     <button onclick="resetStroopTask()">Try Again</button>
                 </div>
             </section>
+            <section id="literature" class="hidden">
+                <h2>Literature Review</h2>
+                <p>This section will contain a comprehensive review of literature related to Dark Triad traits.</p>
+                <!-- Add more content for literature review -->
+            </section>
+            <section id="background" class="hidden">
+                <h2>Background & History</h2>
+                <p>Learn about the history and background of Dark Triad research.</p>
+                <!-- Add more content for background and history -->
+            </section>
         </main>
         <footer>
             <button id="showScientificArticles">Scientific Articles</button>
+            <p>&copy; 2023 Dark Triad Assessments. All rights reserved.</p>
         </footer>
     </div>
     <div id="articlesModal" class="modal hidden">
@@ -110,8 +120,6 @@
             <ul id="articlesList"></ul>
         </div>
     </div>
-    <script src="script.js"></script>
-    <!-- Add this just before the closing </body> tag -->
     <div id="interpretationModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeInterpretationModal()">&times;</span>
@@ -119,5 +127,12 @@
             <div id="interpretationContent"></div>
         </div>
     </div>
+    <div id="loadingBar" class="hidden">
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+        <p id="loadingText">Loading...</p>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
