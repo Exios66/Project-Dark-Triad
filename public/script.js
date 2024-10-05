@@ -1,3 +1,8 @@
+'use strict';
+
+console.log('Script is running');
+
+// ===== Module: Theme Management =====
 document.addEventListener('DOMContentLoaded', () => {
     const content = document.getElementById('content');
     const nav = document.querySelector('nav');
@@ -33,3 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load the home page by default
     loadPage('home');
 });
+
+// ... (copy the rest of the script.js content)
+
+// Make sure to expose necessary functions to the global scope
+window.startAssessment = startAssessment;
+window.submitAnswer = submitAnswer;
+window.resetAutoAdvance = resetAutoAdvance;
+window.resetAssessment = resetAssessment;
+window.showInterpretation = showInterpretation;
+window.closeInterpretationModal = closeInterpretationModal;
+window.closeModal = closeModal;

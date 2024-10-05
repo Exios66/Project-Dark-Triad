@@ -49,9 +49,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Header Styles */
 header {
-    background-color: var(--primary-color);
+    background: #333;
     color: #fff;
-    text-align: center;
     padding: 1rem;
 }
 

@@ -1,138 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>Dark Triad Assessments</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description" content="Dark Triad Assessments Web Application"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dark Triad</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.1/math.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
 </head>
 <body>
-    <div id="intro">
-        <h1>Welcome to Dark Triad Assessments</h1>
-    </div>
-    <div id="darkModeToggleContainer">
-        <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
-    </div>
-    <div id="content" class="hidden">
-        <header>
-            <h1>Dark Triad Assessments</h1>
-            <button id="menuToggle" aria-label="Toggle Menu">☰</button>
-        </header>
-        <nav id="mainNav">
+    <header>
+        <h1>Project Dark Triad</h1>
+        <nav>
             <ul>
-                <li><a href="#assessments">Assessments</a></li>
-                <li><a href="#literature">Literature Review</a></li>
-                <li><a href="#background">Background & History</a></li>
-                <li><a href="#psychometric">Psychometric Calculator</a></li>
+                <li><a href="#" id="home">Home</a></li>
+                <li><a href="#" id="assessments">Assessments</a></li>
+                <li><a href="#" id="results">Results</a></li>
             </ul>
         </nav>
-        <main>
-            <section id="assessments">
-                <article id="sdt3" class="assessment">
-                    <h2>Short Dark Triad (SDT3)</h2>
-                    <p>Assesses Machiavellianism, Narcissism, and Psychopathy.</p>
-                    <button onclick="startAssessment('sdt3')">Start SDT3 Assessment</button>
-                </article>
-                <article id="dirtyDozen" class="assessment">
-                    <h2>Dirty Dozen</h2>
-                    <p>A concise measure of the Dark Triad traits.</p>
-                    <button onclick="startAssessment('dirtyDozen')">Start Dirty Dozen Assessment</button>
-                </article>
-                <article id="sdt4" class="assessment">
-                    <h2>Short Dark Tetrad (SDT4)</h2>
-                    <p>Assesses Machiavellianism, Narcissism, Psychopathy, and Sadism.</p>
-                    <button onclick="startAssessment('sdt4')">Start SDT4 Assessment</button>
-                </article>
-                <article id="machIV" class="assessment">
-                    <h2>MACH IV</h2>
-                    <p>Measures Machiavellianism in interpersonal relationships.</p>
-                    <button onclick="startAssessment('machIV')">Start MACH IV Assessment</button>
-                </article>
-                <article id="mmpi" class="assessment">
-                    <h2>MMPI-style</h2>
-                    <p>A comprehensive personality and psychopathology assessment.</p>
-                    <button onclick="startAssessment('mmpi')">Start MMPI-style Assessment</button>
-                </article>
-                <article id="hexaco" class="assessment">
-                    <h2>HEXACO</h2>
-                    <p>Evaluates six major dimensions of personality: Honesty-Humility, Emotionality, Extraversion, Agreeableness, Conscientiousness, and Openness to Experience.</p>
-                    <button onclick="startAssessment('hexaco')">Start HEXACO Assessment</button>
-                </article>
-                <article id="ocean" class="assessment">
-                    <h2>OCEAN (Big Five)</h2>
-                    <p>Assesses the five broad personality traits: Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism.</p>
-                    <button onclick="startAssessment('ocean')">Start OCEAN Assessment</button>
-                </article>
-            </section>
-            <div id="progressBarContainer" class="hidden">
-                <div id="progressBar"></div>
-            </div>
-            <section id="assessmentQuestions" class="hidden"></section>
-            <section id="results" class="hidden"></section>
-            <canvas id="resultsChart" class="hidden"></canvas>
-            <section id="psychometric" class="hidden">
-                <h2>Psychometric Calculator</h2>
-                <!-- Add psychometric calculator content here -->
-            </section>
-            <section id="stroopTask" class="hidden">
-                <h2>Stroop Task</h2>
-                <div id="stroopInstructions">
-                    <p>Name the <strong>color</strong> of the word, not the word itself.</p>
-                    <button onclick="startStroopTask()">Start Task</button>
-                </div>
-                <div id="stroopGame" class="hidden">
-                    <div id="stroopWord"></div>
-                    <div id="stroopButtons"></div>
-                    <div id="stroopProgress"></div>
-                </div>
-                <div id="stroopResults" class="hidden">
-                    <h3>Results</h3>
-                    <p>Accuracy: <span id="stroopAccuracy"></span></p>
-                    <p>Average Response Time: <span id="stroopAvgTime"></span></p>
-                    <button onclick="resetStroopTask()">Try Again</button>
-                </div>
-            </section>
-            <section id="literature" class="hidden">
-                <h2>Literature Review</h2>
-                <p>This section will contain a comprehensive review of literature related to Dark Triad traits.</p>
-                <!-- Add more content for literature review -->
-            </section>
-            <section id="background" class="hidden">
-                <h2>Background & History</h2>
-                <p>Learn about the history and background of Dark Triad research.</p>
-                <!-- Add more content for background and history -->
-            </section>
-        </main>
-        <footer>
-            <button id="showScientificArticles">Scientific Articles</button>
-            <p>&copy; 2023 Dark Triad Assessments. All rights reserved.</p>
-        </footer>
-    </div>
-    <div id="articlesModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Scientific Articles</h2>
-            <ul id="articlesList"></ul>
-        </div>
-    </div>
-    <div id="interpretationModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeInterpretationModal()">&times;</span>
-            <h2>Detailed Interpretation</h2>
-            <div id="interpretationContent"></div>
-        </div>
-    </div>
-    <div id="loadingBar" class="hidden">
-        <div class="progress-container">
-            <div class="progress-bar"></div>
-        </div>
-        <p id="loadingText">Loading...</p>
-    </div>
+    </header>
+    <main id="content"></main>
     <script src="script.js"></script>
 </body>
 </html>
