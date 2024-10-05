@@ -1,33 +1,51 @@
-/* CSS Variables for Light and Dark Modes */
+```html
+<style>
+/* Enhanced CSS Variables for Light and Dark Modes */
 :root {
     /* Light Mode Variables */
-    --primary-color: #00ffff;
+    --primary-color: #00a0a0;
     --secondary-color: #ff00ff;
+    --accent-color: #ffa500;
     --background-color: #f0f0f0;
     --text-color: #333333;
-    --button-hover-color: #00cccc;
+    --heading-color: #005050;
+    --button-color: #00a0a0;
+    --button-text-color: #ffffff;
+    --button-hover-color: #008080;
     --assessment-bg: #ffffff;
     --assessment-shadow: rgba(0, 0, 0, 0.1);
     --nav-bg: #333333;
     --nav-text: #ffffff;
+    --link-color: #0066cc;
+    --link-hover-color: #004080;
 }
 
 .dark-mode {
     /* Dark Mode Variables */
     --primary-color: #00cccc;
     --secondary-color: #cc00cc;
+    --accent-color: #ffd700;
     --background-color: #1a1a1a;
     --text-color: #f0f0f0;
+    --heading-color: #00ffff;
+    --button-color: #00cccc;
+    --button-text-color: #000000;
     --button-hover-color: #009999;
     --assessment-bg: #2a2a2a;
     --assessment-shadow: rgba(0, 255, 255, 0.1);
     --nav-bg: #000000;
     --nav-text: #00ffff;
+    --link-color: #66ccff;
+    --link-hover-color: #99ddff;
 }
+
+/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap');
 
 /* Base Styles */
 body {
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -36,24 +54,45 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Heading Styles */
+/* Typography Styles */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Lato', sans-serif;
-    color: var(--primary-color);
+    color: var(--heading-color);
+    line-height: 1.2;
+    margin-bottom: 0.5em;
 }
 
-/* Header Styles */
-header {
+h1 { font-size: 2.5rem; font-weight: 700; }
+h2 { font-size: 2rem; font-weight: 700; }
+h3 { font-size: 1.75rem; font-weight: 400; }
+h4 { font-size: 1.5rem; font-weight: 400; }
+h5 { font-size: 1.25rem; font-weight: 400; }
+h6 { font-size: 1rem; font-weight: 700; }
+
+p {
+    margin-bottom: 1em;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover, a:focus {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
+
+/* Header and Navigation Styles */
+header, nav {
     background-color: var(--nav-bg);
     color: var(--nav-text);
-    text-align: center;
     padding: 1rem;
 }
 
-/* Navigation Styles */
-nav {
-    background-color: var(--nav-bg);
-    padding: 0.5rem;
+header {
+    text-align: center;
 }
 
 nav ul {
@@ -72,6 +111,8 @@ nav ul li a {
     color: var(--nav-text);
     text-decoration: none;
     padding: 0.5rem;
+    font-weight: 700;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 nav ul li a:hover,
@@ -88,54 +129,58 @@ main {
     margin: 0 auto;
 }
 
-/* Assessment Styles */
-.assessment {
+/* Assessment and Results Styles */
+.assessment, #results {
     background-color: var(--assessment-bg);
     border-radius: 5px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
     box-shadow: 0 2px 5px var(--assessment-shadow);
     border: 1px solid var(--primary-color);
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 /* Button Styles */
 button {
-    background-color: var(--primary-color);
-    color: var(--nav-bg);
+    background-color: var(--button-color);
+    color: var(--button-text-color);
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     cursor: pointer;
     border-radius: 3px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.1s;
     font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 button:hover,
 button:focus {
     background-color: var(--button-hover-color);
+    transform: translateY(-2px);
 }
 
 /* Question Styles */
 .question {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    font-family: 'Merriweather', serif;
+    font-weight: 300;
 }
 
 .options label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.options label:hover {
+    color: var(--primary-color);
 }
 
 .options input[type="radio"] {
     margin-right: 0.5rem;
-}
-
-/* Results Styles */
-#results {
-    background-color: var(--assessment-bg);
-    border-radius: 5px;
-    padding: 1rem;
-    margin-top: 1rem;
-    box-shadow: 0 2px 5px var(--assessment-shadow);
 }
 
 /* Dark Mode Toggle Styles */
@@ -149,6 +194,12 @@ button:focus {
     font-size: 1.5rem;
     cursor: pointer;
     color: var(--primary-color);
+    transition: color 0.3s, transform 0.3s;
+}
+
+#darkModeToggle:hover {
+    color: var(--accent-color);
+    transform: rotate(15deg);
 }
 
 /* Hidden Class */
@@ -159,25 +210,34 @@ button:focus {
 /* Progress Bar Styles */
 #progressBarContainer {
     width: 100%;
-    background-color: #ddd;
+    background-color: var(--assessment-bg);
     border-radius: 5px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
 }
 
 #progressBar {
     width: 0;
     height: 20px;
-    background-color: var(--secondary-color);
+    background-color: var(--accent-color);
     border-radius: 5px;
     text-align: center;
     line-height: 20px;
-    color: white;
+    color: var(--button-text-color);
+    font-weight: 700;
+    transition: width 0.3s ease-in-out;
 }
 
 /* Tooltip for Trait Explanation */
 .trait-explanation {
     cursor: help;
     margin-left: 5px;
+    color: var(--accent-color);
+    transition: color 0.3s;
+}
+
+.trait-explanation:hover {
+    color: var(--secondary-color);
 }
 
 /* Introduction Screen Styles */
@@ -192,45 +252,40 @@ button:focus {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 1s, z-index 0s 1s; /* Delay the z-index change to align with opacity */
+    transition: opacity 1s, z-index 0s 1s;
 }
 
 #intro.hidden {
-    opacity: 0; /* Fades out */
-    z-index: -1; /* Lower the z-index after the fade */
+    opacity: 0;
+    z-index: -1;
 }
 
 #intro h1 {
-    color: #fff;
-    font-size: 2.5rem;
+    color: var(--button-text-color);
+    font-size: 3rem;
     text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Fade-In Animation */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.assessment,
-#results,
-#assessmentQuestions {
-    animation: fadeIn 0.5s ease-in-out;
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Footer Styles */
 footer {
     background-color: var(--nav-bg);
     color: var(--nav-text);
-    padding: 20px 0;
-    margin-top: 40px;
+    padding: 2rem 0;
+    margin-top: 3rem;
 }
 
 .footer-content {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -241,7 +296,8 @@ footer {
 }
 
 .footer-section h3 {
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
 }
 
 .footer-section ul {
@@ -250,15 +306,17 @@ footer {
 }
 
 .footer-section ul li {
-    margin-bottom: 5px;
+    margin-bottom: 0.5rem;
 }
 
 .footer-section a {
     color: var(--nav-text);
     text-decoration: none;
+    transition: color 0.3s;
 }
 
 .footer-section a:hover {
+    color: var(--accent-color);
     text-decoration: underline;
 }
 
@@ -272,38 +330,43 @@ footer {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
     background-color: var(--assessment-bg);
     margin: 10% auto;
-    padding: 20px;
+    padding: 2rem;
     border: 1px solid var(--primary-color);
     width: 80%;
     max-width: 600px;
-    border-radius: 5px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .close {
     color: var(--primary-color);
     float: right;
-    font-size: 28px;
+    font-size: 2rem;
     font-weight: bold;
     cursor: pointer;
     background: none;
     border: none;
+    transition: color 0.3s;
 }
 
 .close:hover,
 .close:focus {
     color: var(--secondary-color);
-    text-decoration: none;
-    cursor: pointer;
 }
 
 /* Responsive Design */
 @media only screen and (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
     nav ul {
         flex-direction: column;
     }
@@ -314,7 +377,6 @@ footer {
 
     #darkModeToggle {
         top: 70px;
-        right: 10px;
     }
 
     button {
@@ -323,14 +385,23 @@ footer {
     }
 
     .assessment {
-        padding: 0.5rem;
+        padding: 1rem;
     }
 
     .modal-content {
         width: 95%;
+        margin: 5% auto;
     }
 
     main {
         padding: 1rem;
     }
+
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    h4 { font-size: 1.25rem; }
+    h5 { font-size: 1.1rem; }
+    h6 { font-size: 1rem; }
 }
+</style>
