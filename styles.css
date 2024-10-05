@@ -130,7 +130,12 @@ main {
     justify-content: center;
     align-items: center;
     z-index: 999;
-    transition: opacity 1s;
+    transition: opacity 1s; /* Ensure this line is present */
+}
+
+.hidden {
+    display: none;
+}
 }
 
 /* Assessments */
