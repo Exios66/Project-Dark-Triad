@@ -1,28 +1,8 @@
 const express = require('express');
 const path = require('path');
-const cors = require('cors');
-const helmet = require('helmet');
-const compression = require('compression');
-const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-// Middleware
-app.use(helmet()); // Helps secure your app by setting various HTTP headers
-app.use(compression()); // Compress all routes
-app.use(cors()); // Enable CORS for all routes
-app.use(express.json()); // Parse JSON bodies
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
-app.use(limiter);
 
 // Serve static files from the root directory
 app.use(express.static(path.join(__dirname)));
@@ -38,7 +18,14 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
+// Handle 404 errors
+app.use((req, res, next) => {
+  res.status(404).send('Sorry, page not found!');
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+}).on('error', (err) => {
+  console.error('Error starting server:', err);
 });

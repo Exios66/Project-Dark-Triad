@@ -2,10 +2,14 @@ const fs = require('fs');
 const path = require('path');
 
 const srcDir = path.join(__dirname, 'src');
-const publicDir = path.join(__dirname, 'public');
 const rootDir = __dirname;
+publicDir = path.join(rootDir, 'public');
 
 const filesToCopy = ['index.html', 'styles.css', 'script.js'];
+
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir);
+}
 
 filesToCopy.forEach(file => {
   const srcPath = path.join(srcDir, file);
