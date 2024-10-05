@@ -339,7 +339,6 @@ function calculateMACHIVScore(trait, score) {
     const adjustedScore = (score / 100) * maxScore; // Convert percentage to 1-7 scale
     return (adjustedScore / maxScore) * 100; // Convert back to percentage
 }
-}
 
 function interpretScore(trait, score) {
     let interpretation = '';
