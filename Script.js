@@ -1,5 +1,3 @@
-// script.js
-
 /* Dark Mode Toggle */
 const darkModeToggle = document.getElementById('darkModeToggle');
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -69,13 +67,18 @@ let autoAdvanceTimer;
 
 /* Function to Start an Assessment */
 function startAssessment(assessment) {
-    currentAssessment = assessment;
-    currentQuestionIndex = 0;
-    answers = {};
-    document.getElementById('assessments').classList.add('hidden');
-    document.getElementById('assessmentQuestions').classList.remove('hidden');
-    document.getElementById('progressBarContainer').classList.remove('hidden');
-    showQuestion();
+    try {
+        currentAssessment = assessment;
+        currentQuestionIndex = 0;
+        answers = {};
+        document.getElementById('assessments').classList.add('hidden');
+        document.getElementById('assessmentQuestions').classList.remove('hidden');
+        document.getElementById('progressBarContainer').classList.remove('hidden');
+        showQuestion();
+    } catch (error) {
+        console.error(`Error starting assessment ${assessment}:`, error);
+        alert('An error occurred while starting the assessment. Please try again.');
+    }
 }
 
 /* Function to Display a Question */
