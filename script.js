@@ -1,106 +1,188 @@
-// script.js
-
 'use strict';
 
-// ===== Module: Theme Management =====
+document.addEventListener("DOMContentLoaded", () => {
+    const introSection = document.getElementById("intro");
+    const content = document.getElementById("content");
 
-// Wait for the DOM to load before accessing elements
-document.addEventListener('DOMContentLoaded', () => {
-    // Dark Mode Toggle
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    darkModeToggle.addEventListener('click', toggleDarkMode);
+    // Show intro section immediately
+    introSection.style.opacity = "1";
+    content.classList.add("hidden");
 
-    // Initialize dark mode state
+    // After 0.5 seconds, fade out intro and show content
+    setTimeout(() => {
+        introSection.style.opacity = "0";
+        setTimeout(() => {
+            introSection.classList.add("hidden");
+            content.classList.remove("hidden");
+        }, 500); // Wait for the fade-out transition to complete
+    }, 500);
+
+    // Initialize other functionalities
     initializeDarkMode();
-
-    // Initialize intro screen logic
-    initializeIntroScreen();
-
-    // Initialize modal functionality
     initializeModals();
+    initializeSettings();
 });
+
+// Function to initialize dark mode
+function initializeDarkMode() {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    
+    // Set initial mode
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    updateDarkModeToggle(isDarkMode);
+    
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+}
 
 // Function to toggle dark mode
 function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
-    darkModeToggle.style.color = isDarkMode ? '#ecf0f1' : '#333';
+    const isDarkMode = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+    updateDarkModeToggle(isDarkMode);
 
     // Update chart colors if a chart exists
     if (window.resultsChart) {
-        updateChartColors();
+        updateChartColors(isDarkMode);
     }
 }
 
+// Add this new function to update the toggle button
+function updateDarkModeToggle(isDarkMode) {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.textContent = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+    darkModeToggle.setAttribute('aria-label', isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+}
+
 // Function to update chart colors
-function updateChartColors() {
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    const newColor = isDarkMode ? '#ecf0f1' : '#333';
-    window.resultsChart.options.scales.r.pointLabels.color = newColor;
-    window.resultsChart.options.plugins.legend.labels.color = newColor;
+function updateChartColors(isDarkMode) {
+    const textColor = isDarkMode ? '#ecf0f1' : '#333';
+    const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+    window.resultsChart.options.scales.r.pointLabels.color = textColor;
+    window.resultsChart.options.scales.r.grid.color = gridColor;
+    window.resultsChart.options.plugins.legend.labels.color = textColor;
     window.resultsChart.update();
 }
 
-// Function to initialize dark mode state
-function initializeDarkMode() {
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
-    darkModeToggle.style.color = isDarkMode ? '#ecf0f1' : '#333';
-}
-
-// ===== Module: Intro Screen Logic =====
-
-// Function to initialize intro screen
-function initializeIntroScreen() {
-    // Hide intro screen after 3 seconds
-    setTimeout(() => {
-        const intro = document.getElementById('intro');
-        intro.style.opacity = '0';
-        setTimeout(() => {
-            intro.style.display = 'none';
-        }, 1000);
-    }, 3000);
-}
-
-// ===== Module: Assessments Data =====
-
-// Assessment questions and data
+// Assessment questions
 const assessments = {
     sdt3: [
         { question: "It's not wise to tell your secrets.", trait: "Machiavellianism" },
-        // ... (Include all the SDT3 questions)
+        { question: "I like to use clever manipulation to get my way.", trait: "Machiavellianism" },
+        { question: "Whatever it takes, you must get the important people on your side.", trait: "Machiavellianism" },
+        { question: "Avoid direct conflict with others because they may be useful in the future.", trait: "Machiavellianism" },
+        { question: "It's wise to keep track of information that you can use against people later.", trait: "Machiavellianism" },
+        { question: "You should wait for the right time to get back at people.", trait: "Machiavellianism" },
+        { question: "There are things you should hide from other people because they don't need to know.", trait: "Machiavellianism" },
+        { question: "Make sure your plans benefit you, not others.", trait: "Machiavellianism" },
+        { question: "Most people can be manipulated.", trait: "Machiavellianism" },
+        { question: "People see me as a natural leader.", trait: "Narcissism" },
+        { question: "I hate being the center of attention.", trait: "Narcissism", reversed: true },
+        { question: "Many group activities tend to be dull without me.", trait: "Narcissism" },
+        { question: "I know that I am special because everyone keeps telling me so.", trait: "Narcissism" },
+        { question: "I like to get acquainted with important people.", trait: "Narcissism" },
+        { question: "I feel embarrassed if someone compliments me.", trait: "Narcissism", reversed: true },
+        { question: "I have been compared to famous people.", trait: "Narcissism" },
+        { question: "I am an average person.", trait: "Narcissism", reversed: true },
+        { question: "I insist on getting the respect I deserve.", trait: "Narcissism" },
+        { question: "I like to get revenge on authorities.", trait: "Psychopathy" },
+        { question: "I avoid dangerous situations.", trait: "Psychopathy", reversed: true },
+        { question: "Payback needs to be quick and nasty.", trait: "Psychopathy" },
+        { question: "People often say I'm out of control.", trait: "Psychopathy" },
+        { question: "It's true that I can be mean to others.", trait: "Psychopathy" },
+        { question: "People who mess with me always regret it.", trait: "Psychopathy" },
+        { question: "I have never gotten into trouble with the law.", trait: "Psychopathy", reversed: true },
+        { question: "I enjoy having sex with people I hardly know.", trait: "Psychopathy" },
+        { question: "I'll say anything to get what I want.", trait: "Psychopathy" }
     ],
     dirtyDozen: [
-        // ... (Include all the Dirty Dozen questions)
+        { question: "I tend to manipulate others to get my way.", trait: "Machiavellianism" },
+        { question: "I have used deceit or lied to get my way.", trait: "Machiavellianism" },
+        { question: "I have used flattery to get my way.", trait: "Machiavellianism" },
+        { question: "I tend to exploit others towards my own end.", trait: "Machiavellianism" },
+        { question: "I tend to lack remorse.", trait: "Psychopathy" },
+        { question: "I tend to be unconcerned with the morality of my actions.", trait: "Psychopathy" },
+        { question: "I tend to be callous or insensitive.", trait: "Psychopathy" },
+        { question: "I tend to be cynical.", trait: "Psychopathy" },
+        { question: "I tend to want others to admire me.", trait: "Narcissism" },
+        { question: "I tend to want others to pay attention to me.", trait: "Narcissism" },
+        { question: "I tend to seek prestige or status.", trait: "Narcissism" },
+        { question: "I tend to expect special favors from others.", trait: "Narcissism" }
     ],
     sdt4: [
-        // ... (Include all the SDT4 questions)
+        { question: "It's not wise to tell your secrets.", trait: "Machiavellianism" },
+        { question: "I like to use clever manipulation to get my way.", trait: "Machiavellianism" },
+        { question: "Whatever it takes, you must get the important people on your side.", trait: "Machiavellianism" },
+        { question: "Avoid direct conflict with others because they may be useful in the future.", trait: "Machiavellianism" },
+        { question: "It's wise to keep track of information that you can use against people later.", trait: "Machiavellianism" },
+        { question: "You should wait for the right time to get back at people.", trait: "Machiavellianism" },
+        { question: "There are things you should hide from other people because they don't need to know.", trait: "Machiavellianism" },
+        { question: "People see me as a natural leader.", trait: "Narcissism" },
+        { question: "I have a unique talent for persuading people.", trait: "Narcissism" },
+        { question: "Group activities tend to be dull without me.", trait: "Narcissism" },
+        { question: "I know that I am special because everyone keeps telling me so.", trait: "Narcissism" },
+        { question: "I have a great deal of natural talent.", trait: "Narcissism" },
+        { question: "I like to show off every now and then.", trait: "Narcissism" },
+        { question: "I'm likely to become a future star in some area.", trait: "Narcissism" },
+        { question: "People who mess with me always regret it.", trait: "Psychopathy" },
+        { question: "You should take advantage of other people before they do it to you.", trait: "Psychopathy" },
+        { question: "People often say I'm out of control.", trait: "Psychopathy" },
+        { question: "I sometimes get into trouble for breaking rules.", trait: "Psychopathy" },
+        { question: "I tend to fight against authorities and their rules.", trait: "Psychopathy" },
+        { question: "I've been in more fights than most people of my age and gender.", trait: "Psychopathy" },
+        { question: "I tend to dive in, then ask questions later.", trait: "Psychopathy" },
+        { question: "I love to watch YouTube clips of people fighting.", trait: "Sadism" },
+        { question: "I enjoy watching violent sports.", trait: "Sadism" },
+        { question: "Some people deserve to suffer.", trait: "Sadism" },
+        { question: "Just for kicks, I've said mean things on social media.", trait: "Sadism" },
+        { question: "I know how to hurt someone with words alone.", trait: "Sadism" },
+        { question: "I enjoy making jokes at the expense of others.", trait: "Sadism" },
+        { question: "I have fantasies about hurting people who have wronged me.", trait: "Sadism" }
     ],
     machIV: [
-        // ... (Include all the MACH IV questions)
-    ],
-    mmpi: [
-        // ... (Include all the MMPI-style questions)
-    ],
-    hexaco: [
-        // ... (Include all the HEXACO questions)
-    ],
-    ocean: [
-        // ... (Include all the OCEAN questions)
+        { question: "Never tell anyone the real reason you did something unless it is useful to do so.", trait: "Machiavellianism" },
+        { question: "The best way to handle people is to tell them what they want to hear.", trait: "Machiavellianism" },
+        { question: "One should take action only when sure it is morally right.", trait: "Machiavellianism", reversed: true },
+        { question: "Most people are basically good and kind.", trait: "Machiavellianism", reversed: true },
+        { question: "It is safest to assume that all people have a vicious streak and it will come out when they are given a chance.", trait: "Machiavellianism" },
+        { question: "Honesty is the best policy in all cases.", trait: "Machiavellianism", reversed: true },
+        { question: "There is no excuse for lying to someone else.", trait: "Machiavellianism", reversed: true },
+        { question: "Generally speaking, people won't work hard unless they're forced to do so.", trait: "Machiavellianism" },
+        { question: "All in all, it is better to be humble and honest than to be important and dishonest.", trait: "Machiavellianism", reversed: true },
+        { question: "When you ask someone to do something for you, it is best to give the real reasons for wanting it rather than giving reasons which carry more weight.", trait: "Machiavellianism", reversed: true },
+        { question: "Most people who get ahead in the world lead clean, moral lives.", trait: "Machiavellianism", reversed: true },
+        { question: "Anyone who completely trusts anyone else is asking for trouble.", trait: "Machiavellianism" },
+        { question: "The biggest difference between most criminals and other people is that the criminals are stupid enough to get caught.", trait: "Machiavellianism" },
+        { question: "Most people are brave.", trait: "Machiavellianism", reversed: true },
+        { question: "It is wise to flatter important people.", trait: "Machiavellianism" },
+        { question: "It is possible to be good in all respects.", trait: "Machiavellianism", reversed: true },
+        { question: "P.T. Barnum was wrong when he said that there's a sucker born every minute.", trait: "Machiavellianism", reversed: true },
+        { question: "It is hard to get ahead without cutting corners here and there.", trait: "Machiavellianism" },
+        { question: "People suffering from incurable diseases should have the choice of being put painlessly to death.", trait: "Machiavellianism" },
+        { question: "Most people forget more easily the death of their parents than the loss of their property.", trait: "Machiavellianism" }
     ]
 };
-
-// ===== Module: Assessment Handling =====
 
 let currentAssessment = '';
 let currentQuestionIndex = 0;
 let answers = {};
-let autoAdvanceTimer;
+let autoProgressEnabled = false;
+let autoProgressTimer;
 
-// Function to start an assessment
+// Function to initialize settings
+function initializeSettings() {
+    const autoProgressToggle = document.getElementById('autoProgressToggle');
+    autoProgressToggle.addEventListener('change', (e) => {
+        autoProgressEnabled = e.target.checked;
+        localStorage.setItem('autoProgressEnabled', autoProgressEnabled);
+    });
+
+    // Load saved setting
+    autoProgressEnabled = localStorage.getItem('autoProgressEnabled') === 'true';
+    autoProgressToggle.checked = autoProgressEnabled;
+}
+
 function startAssessment(assessment) {
     currentAssessment = assessment;
     currentQuestionIndex = 0;
@@ -111,7 +193,6 @@ function startAssessment(assessment) {
     showQuestion();
 }
 
-// Function to display the current question
 function showQuestion() {
     const questionContainer = document.getElementById('assessmentQuestions');
     const question = assessments[currentAssessment][currentQuestionIndex];
@@ -124,58 +205,68 @@ function showQuestion() {
             <div class="options">
                 ${[1, 2, 3, 4, 5].map(value => `
                     <label>
-                        <input type="radio" name="answer" value="${value}" onchange="resetAutoAdvance()">
+                        <input type="radio" name="answer" value="${value}" onchange="handleAnswerSelection()">
                         ${value} - ${getScaleLabel(value)}
                     </label>
                 `).join('')}
             </div>
         </div>
         <button onclick="submitAnswer()">Next</button>
-        <div id="autoAdvanceTimer"></div>
+        ${autoProgressEnabled ? '<div id="autoProgressBar"></div>' : ''}
     `;
 
     updateProgressBar();
-    startAutoAdvance();
+
+    if (autoProgressEnabled) {
+        startAutoProgressTimer();
+    }
 }
 
-// Function to start auto-advance timer
-function startAutoAdvance() {
-    let timeLeft = 4;
-    const timerDisplay = document.getElementById('autoAdvanceTimer');
-    timerDisplay.textContent = `Auto-advancing in ${timeLeft} seconds...`;
-
-    autoAdvanceTimer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft > 0) {
-            timerDisplay.textContent = `Auto-advancing in ${timeLeft} seconds...`;
-        } else {
-            clearInterval(autoAdvanceTimer);
-            submitAnswer();
-        }
-    }, 1000);
-}
-
-// Function to reset auto-advance timer
-function resetAutoAdvance() {
-    clearInterval(autoAdvanceTimer);
-    startAutoAdvance();
-}
-
-// Function to get scale label based on value
 function getScaleLabel(value) {
     const labels = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
     return labels[value - 1];
 }
 
-// Function to submit an answer and proceed to the next question
+// Add this function to handle answer selection
+function handleAnswerSelection() {
+    if (autoProgressEnabled) {
+        clearTimeout(autoProgressTimer);
+        startAutoProgressTimer();
+    }
+}
+
+// Add this function to start the auto-progress timer
+function startAutoProgressTimer() {
+    let timeLeft = 5;
+    const autoProgressBar = document.getElementById('autoProgressBar');
+    autoProgressBar.style.width = '100%';
+
+    function updateTimer() {
+        timeLeft--;
+        const progress = (timeLeft / 5) * 100;
+        autoProgressBar.style.width = `${progress}%`;
+
+        if (timeLeft > 0) {
+            autoProgressTimer = setTimeout(updateTimer, 1000);
+        } else {
+            submitAnswer();
+        }
+    }
+
+    autoProgressTimer = setTimeout(updateTimer, 1000);
+}
+
 function submitAnswer() {
-    clearInterval(autoAdvanceTimer);
+    if (autoProgressEnabled) {
+        clearTimeout(autoProgressTimer);
+    }
+
     const selectedAnswer = document.querySelector('input[name="answer"]:checked');
     if (selectedAnswer) {
         const question = assessments[currentAssessment][currentQuestionIndex];
         const score = parseInt(selectedAnswer.value);
         answers[question.trait] = (answers[question.trait] || 0) + (question.reversed ? 6 - score : score);
-
+        
         currentQuestionIndex++;
         if (currentQuestionIndex < assessments[currentAssessment].length) {
             showQuestion();
@@ -184,11 +275,12 @@ function submitAnswer() {
         }
     } else {
         alert('Please select an answer before proceeding.');
-        startAutoAdvance();
+        if (autoProgressEnabled) {
+            startAutoProgressTimer();
+        }
     }
 }
 
-// Function to update the progress bar
 function updateProgressBar() {
     const progressBar = document.getElementById('progressBar');
     const progress = ((currentQuestionIndex + 1) / assessments[currentAssessment].length) * 100;
@@ -196,131 +288,163 @@ function updateProgressBar() {
     progressBar.textContent = `${Math.round(progress)}%`;
 }
 
-// ===== Module: Results Handling =====
+// Optimize assessment calculations using math.js and lodash
+function calculateTraitScore(trait) {
+    const traitQuestions = _.filter(assessments[currentAssessment], { trait: trait });
+    const traitScores = traitQuestions.map(q => answers[q.question] || 0);
+    const maxScore = traitQuestions.length * 5;
+    let score = math.chain(math.sum(traitScores))
+        .divide(maxScore)
+        .multiply(100)
+        .done();
 
-// Function to display the results
+    // Apply specific scoring methods for each assessment
+    switch (currentAssessment) {
+        case 'sdt3':
+            score = calculateSDT3Score(trait, score);
+            break;
+        case 'dirtyDozen':
+            score = calculateDirtyDozenScore(trait, score);
+            break;
+        case 'sdt4':
+            score = calculateSDT4Score(trait, score);
+            break;
+        case 'machIV':
+            score = calculateMACHIVScore(trait, score);
+            break;
+    }
+
+    return score;
+}
+
+function calculateSDT3Score(trait, score) {
+    // SDT3 uses a 1-5 scale, so we don't need to adjust the score
+    return score;
+}
+
+function calculateDirtyDozenScore(trait, score) {
+    // Dirty Dozen uses a 1-5 scale, so we don't need to adjust the score
+    return score;
+}
+
+function calculateSDT4Score(trait, score) {
+    // SDT4 uses a 1-5 scale, so we don't need to adjust the score
+    return score;
+}
+
+function calculateMACHIVScore(trait, score) {
+    // MACH-IV uses a 1-7 scale, and has some reverse-scored items
+    // We need to adjust the score calculation for the 1-7 scale
+    const maxScore = 7; // Maximum score per question
+    const adjustedScore = (score / 100) * maxScore; // Convert percentage to 1-7 scale
+    return (adjustedScore / maxScore) * 100; // Convert back to percentage
+}
+}
+
+function interpretScore(trait, score) {
+    let interpretation = '';
+    switch (trait) {
+        case 'Machiavellianism':
+            if (score < 30) interpretation = 'Low Machiavellianism';
+            else if (score < 60) interpretation = 'Average Machiavellianism';
+            else interpretation = 'High Machiavellianism';
+            break;
+        case 'Narcissism':
+            if (score < 30) interpretation = 'Low Narcissism';
+            else if (score < 60) interpretation = 'Average Narcissism';
+            else interpretation = 'High Narcissism';
+            break;
+        case 'Psychopathy':
+            if (score < 30) interpretation = 'Low Psychopathy';
+            else if (score < 60) interpretation = 'Average Psychopathy';
+            else interpretation = 'High Psychopathy';
+            break;
+        case 'Sadism':
+            if (score < 30) interpretation = 'Low Sadism';
+            else if (score < 60) interpretation = 'Average Sadism';
+            else interpretation = 'High Sadism';
+            break;
+    }
+    return interpretation;
+}
+
 function showResults() {
     document.getElementById('assessmentQuestions').classList.add('hidden');
     document.getElementById('progressBarContainer').classList.add('hidden');
     document.getElementById('results').classList.remove('hidden');
     document.getElementById('resultsChart').classList.remove('hidden');
 
-    const traits = Object.keys(answers);
-    const scores = traits.map(trait => {
-        const maxScore = assessments[currentAssessment].filter(q => q.trait === trait).length * 5;
-        return (answers[trait] / maxScore) * 100;
-    });
+    const traits = _.uniq(assessments[currentAssessment].map(q => q.trait));
+    const scores = traits.map(calculateTraitScore);
 
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = `
         <h2>Your Results</h2>
         ${traits.map((trait, index) => `
-            <p>${trait}: ${scores[index].toFixed(2)}% 
-            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ</span></p>
+            <p>${trait}: ${scores[index].toFixed(2)}% - ${interpretScore(trait, scores[index])}
+            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ️</span></p>
         `).join('')}
         <button onclick="resetAssessment()">Take Another Assessment</button>
         <button onclick="exportResults()">Export Results</button>
-        <button onclick="uploadStoredResults()" id="uploadButton">Upload Stored Results</button>
+        <button onclick="uploadStoredResults()">Upload Stored Results</button>
     `;
 
     createChart(traits, scores);
 }
 
-// Function to get explanations for traits
 function getTraitExplanation(trait) {
     const explanations = {
         'Machiavellianism': 'Tendency to manipulate and exploit others for personal gain.',
         'Narcissism': 'Excessive self-love, grandiosity, and need for admiration.',
         'Psychopathy': 'Lack of empathy, impulsivity, and antisocial behavior.',
-        'Sadism': 'Deriving pleasure from inflicting pain or humiliation on others.',
-        'Depression': 'Persistent feelings of sadness, hopelessness, and loss of interest in activities.',
-        'Anxiety': 'Excessive worry, fear, and unease about everyday situations.',
-        'Paranoia': 'Irrational and persistent thoughts of suspicion and mistrust towards others.',
-        'Schizotypal Symptoms': 'Unusual perceptions, beliefs, and behaviors that may indicate a disconnection from reality.',
-        'Obsessive-Compulsive Symptoms': 'Recurring, intrusive thoughts and repetitive behaviors aimed at reducing anxiety.',
-        'Honesty-Humility': 'Tendency to be fair and genuine in dealing with others.',
-        'Emotionality': 'Tendency to experience fear, anxiety, dependence, and sentimentality.',
-        'Extraversion': 'Tendency to be sociable, lively, and cheerful.',
-        'Agreeableness': 'Tendency to be forgiving, gentle, and patient.',
-        'Conscientiousness': 'Tendency to be organized, diligent, and careful.',
-        'Openness to Experience': 'Appreciation for art, emotion, adventure, unusual ideas, imagination, and curiosity.',
-        'Neuroticism': 'Tendency to experience negative emotions easily, such as anxiety, anger, and depression.'
+        'Sadism': 'Deriving pleasure from inflicting pain or humiliation on others.'
     };
     return explanations[trait] || 'No explanation available.';
 }
 
-// Function to create the results chart
+// Optimize chart creation using Chart.js built-in features
 function createChart(traits, scores) {
     const ctx = document.getElementById('resultsChart').getContext('2d');
     const isDarkMode = document.body.classList.contains('dark-mode');
     const textColor = isDarkMode ? '#ecf0f1' : '#333';
-
-    if (window.resultsChart) {
-        window.resultsChart.destroy();
-    }
-
-    // Provide options for different chart types
-    const chartType = prompt("Choose chart type: radar, bar, line", "radar") || "radar";
+    const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
 
     window.resultsChart = new Chart(ctx, {
-        type: chartType,
+        type: 'radar',
         data: {
             labels: traits,
             datasets: [{
-                label: 'Scores',
+                label: 'Your Scores',
                 data: scores,
-                backgroundColor: chartType === 'radar' ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgb(54, 162, 235)',
-                borderWidth: 2,
-                fill: chartType !== 'bar' // For bar charts, do not fill under the line
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(255, 99, 132)'
             }]
         },
         options: {
-            scales: chartType === 'radar' ? {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
                 r: {
-                    angleLines: {
-                        display: false
-                    },
+                    angleLines: { color: gridColor },
+                    grid: { color: gridColor },
+                    pointLabels: { color: textColor },
+                    ticks: { color: textColor },
                     suggestedMin: 0,
-                    suggestedMax: 100,
-                    pointLabels: {
-                        color: textColor,
-                        font: {
-                            family: 'Lato, sans-serif'
-                        }
-                    },
-                    ticks: {
-                        backdropColor: 'transparent',
-                        color: textColor
-                    }
-                }
-            } : {
-                x: {
-                    ticks: {
-                        color: textColor
-                    },
-                    grid: {
-                        color: isDarkMode ? '#444' : '#ccc'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    suggestedMax: 100,
-                    ticks: {
-                        color: textColor
-                    },
-                    grid: {
-                        color: isDarkMode ? '#444' : '#ccc'
-                    }
+                    suggestedMax: 100
                 }
             },
             plugins: {
-                legend: {
-                    labels: {
-                        color: textColor,
-                        font: {
-                            family: 'Lato, sans-serif'
-                        }
+                legend: { 
+                    labels: { color: textColor },
+                    position: 'top' 
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => `${context.label}: ${context.raw.toFixed(2)}%`
                     }
                 }
             }
@@ -328,454 +452,37 @@ function createChart(traits, scores) {
     });
 }
 
-// Function to reset the assessment
 function resetAssessment() {
+    if (autoProgressEnabled) {
+        clearTimeout(autoProgressTimer);
+    }
     document.getElementById('results').classList.add('hidden');
     document.getElementById('resultsChart').classList.add('hidden');
     document.getElementById('assessments').classList.remove('hidden');
-    document.getElementById('uploadButton').classList.remove('hidden');
     currentAssessment = '';
     currentQuestionIndex = 0;
     answers = {};
 }
 
-// ===== Module: Exporting and Uploading Results =====
-
-// Function to export results
-function exportResults() {
-    const patientID = prompt("Enter the patient ID for storage:", "");
-    if (!patientID) {
-        alert("Patient ID is required for export.");
-        return;
-    }
-
-    const exportFormat = prompt("Choose export format (txt, csv, json):", "txt");
-    if (['txt', 'csv', 'json'].includes(exportFormat)) {
-        const content = generateExportContent(exportFormat);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const fileName = `${patientID}_${timestamp}.${exportFormat}`;
-
-        // For browser download
-        const blob = new Blob([content], { type: `text/${exportFormat}` });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = fileName;
-        a.click();
-
-        // Simulate storing results locally
-        storeResultsLocally(fileName, content);
-    } else {
-        alert("Invalid format. Please choose 'txt', 'csv', or 'json'.");
-    }
-}
-
-// Function to generate export content
-function generateExportContent(format) {
-    const traits = Object.keys(answers);
-    const scores = traits.map(trait => {
-        const maxScore = assessments[currentAssessment].filter(q => q.trait === trait).length * 5;
-        return (answers[trait] / maxScore) * 100;
-    });
-
-    if (format === "txt") {
-        let content = `Dark Triad Assessment Results\n`;
-        content += `Assessment: ${currentAssessment}\n\n`;
-        traits.forEach((trait, index) => {
-            content += `${trait}: ${scores[index].toFixed(2)}%\n`;
-        });
-        return content;
-    } else if (format === "csv") {
-        let content = "Trait,Score\n";
-        traits.forEach((trait, index) => {
-            content += `${trait},${scores[index].toFixed(2)}\n`;
-        });
-        return content;
-    } else if (format === "json") {
-        const result = {};
-        traits.forEach((trait, index) => {
-            result[trait] = scores[index].toFixed(2);
-        });
-        return JSON.stringify({ assessment: currentAssessment, results: result }, null, 2);
-    }
-}
-
-// Function to simulate storing results locally
-function storeResultsLocally(fileName, content) {
-    console.log(`Storing file: ${fileName}`);
-    console.log(`Content: ${content}`);
-    alert(`File ${fileName} has been stored locally. (This is a simulation)`);
-}
-
-// Function to upload stored results
-function uploadStoredResults() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.txt,.csv,.json';
-    fileInput.onchange = (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
-            const uploadedData = parseUploadedContent(content, file.name.split('.').pop());
-            visualizeUploadedData(uploadedData);
-        };
-        reader.readAsText(file);
-    };
-    fileInput.click();
-}
-
-// Function to parse uploaded content
-function parseUploadedContent(content, fileType) {
-    if (fileType === 'csv') {
-        const lines = content.split('\n');
-        const data = {};
-        lines.slice(1).forEach(line => {
-            const [trait, score] = line.split(',');
-            if (trait && score) {
-                data[trait.trim()] = parseFloat(score);
-            }
-        });
-        return data;
-    } else if (fileType === 'json') {
-        const jsonData = JSON.parse(content);
-        return jsonData.results;
-    } else {
-        // Assume TXT format
-        const lines = content.split('\n');
-        const data = {};
-        lines.forEach(line => {
-            const [trait, score] = line.split(':');
-            if (trait && score) {
-                data[trait.trim()] = parseFloat(score);
-            }
-        });
-        return data;
-    }
-}
-
-// Function to visualize uploaded data
-function visualizeUploadedData(data) {
-    const traits = Object.keys(data);
-    const scores = traits.map(trait => parseFloat(data[trait]));
-
-    document.getElementById('assessments').classList.add('hidden');
-    document.getElementById('results').classList.remove('hidden');
-    document.getElementById('resultsChart').classList.remove('hidden');
-
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = `
-        <h2>Uploaded Results</h2>
-        ${traits.map((trait, index) => `
-            <p>${trait}: ${scores[index].toFixed(2)}% 
-            <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ</span></p>
-        `).join('')}
-        <button onclick="resetAssessment()">Back to Assessments</button>
-    `;
-
-    createChart(traits, scores);
-}
-
-// ===== Module: Statistical Analysis =====
-
-// Function to show statistical analysis options
-function showStatisticsOptions() {
-    document.getElementById('assessments').classList.add('hidden');
-    document.getElementById('statisticsOptions').classList.remove('hidden');
-}
-
-// Function to perform selected analysis
-function performAnalysis(analysisType) {
-    const fileInput = document.getElementById('dataUpload');
-    if (fileInput.files.length === 0) {
-        alert('Please upload a data file first.');
-        return;
-    }
-
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-        const data = parseData(e.target.result, file.name);
-        switch (analysisType) {
-            case 'cronbachAlpha':
-                calculateCronbachAlpha(data);
-                break;
-            case 'splitHalf':
-                calculateSplitHalfReliability(data);
-                break;
-            case 'anova':
-                performANOVA(data);
-                break;
-            case 'interItem':
-                calculateInterItemValidity(data);
-                break;
-            case 'psychometric':
-                performPsychometricAnalysis(data);
-                break;
-            case 'irt':
-                performIRTAnalysis(data);
-                break;
-            case 'regression':
-                performRegressionAnalysis(data);
-                break;
-            case 'correlation':
-                performCorrelationAnalysis(data);
-                break;
-            case 'factorAnalysis':
-                performFactorAnalysis(data);
-                break;
-            case 'descriptive':
-                performDescriptiveStatistics(data);
-                break;
-            default:
-                alert('Unknown analysis type.');
-                break;
-        }
-    };
-
-    reader.readAsText(file);
-}
-
-// Function to parse data from uploaded file
-function parseData(content, fileName) {
-    if (fileName.endsWith('.csv')) {
-        return parseCSV(content);
-    } else if (fileName.endsWith('.json')) {
-        return JSON.parse(content);
-    } else {
-        throw new Error('Unsupported file format');
-    }
-}
-
-// Function to parse CSV data
-function parseCSV(csv) {
-    const lines = csv.trim().split('\n');
-    const headers = lines[0].split(',');
-    const data = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
-        if (values.length === headers.length) {
-            const row = {};
-            for (let j = 0; j < headers.length; j++) {
-                row[headers[j]] = parseFloat(values[j]);
-            }
-            data.push(row);
-        }
-    }
-
-    return data;
-}
-
-// Import math.js library for statistical calculations
-// Ensure you have included the math.js script in your HTML:
-// <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.js"></script>
-
-// Implement statistical analysis functions
-function calculateCronbachAlpha(data) {
-    const items = Object.keys(data[0]);
-    const n = items.length;
-    const itemScores = items.map(item => data.map(d => d[item]));
-    const totalScores = data.map(d => items.reduce((sum, item) => sum + d[item], 0));
-
-    const itemVariances = itemScores.map(scores => math.variance(scores));
-    const totalVariance = math.variance(totalScores);
-    const sumItemVariances = math.sum(itemVariances);
-
-    const alpha = (n / (n - 1)) * (1 - (sumItemVariances / totalVariance));
-
-    displayAnalysisResults('Cronbach\'s Alpha', `Alpha: ${alpha.toFixed(3)}`);
-}
-
-function calculateSplitHalfReliability(data) {
-    const items = Object.keys(data[0]);
-    const half = Math.floor(items.length / 2);
-    const firstHalfItems = items.slice(0, half);
-    const secondHalfItems = items.slice(half);
-
-    const firstHalfScores = data.map(d => firstHalfItems.reduce((sum, item) => sum + d[item], 0));
-    const secondHalfScores = data.map(d => secondHalfItems.reduce((sum, item) => sum + d[item], 0));
-
-    const correlation = math.correlation(firstHalfScores, secondHalfScores);
-    const reliability = (2 * correlation) / (1 + correlation);
-
-    displayAnalysisResults('Split-Half Reliability', `Reliability: ${reliability.toFixed(3)}`);
-}
-
-function performANOVA(data) {
-    const groups = {};
-    Object.keys(data[0]).forEach(key => {
-        groups[key] = data.map(d => d[key]);
-    });
-
-    const groupMeans = {};
-    const totalMean = math.mean(Object.values(groups).flat());
-    let ssBetween = 0;
-    let ssWithin = 0;
-    let dfBetween = Object.keys(groups).length - 1;
-    let dfWithin = 0;
-
-    Object.keys(groups).forEach(group => {
-        const groupData = groups[group];
-        const groupMean = math.mean(groupData);
-        groupMeans[group] = groupMean;
-        ssBetween += groupData.length * Math.pow(groupMean - totalMean, 2);
-        ssWithin += math.sum(groupData.map(value => Math.pow(value - groupMean, 2)));
-        dfWithin += groupData.length - 1;
-    });
-
-    const msBetween = ssBetween / dfBetween;
-    const msWithin = ssWithin / dfWithin;
-    const fStatistic = msBetween / msWithin;
-
-    displayAnalysisResults('ANOVA', `F(${dfBetween}, ${dfWithin}) = ${fStatistic.toFixed(3)}`);
-}
-
-function calculateInterItemValidity(data) {
-    const items = Object.keys(data[0]);
-    const itemScores = items.map(item => data.map(d => d[item]));
-    const correlations = [];
-
-    for (let i = 0; i < items.length; i++) {
-        for (let j = i + 1; j < items.length; j++) {
-            const corr = math.correlation(itemScores[i], itemScores[j]);
-            correlations.push(corr);
-        }
-    }
-
-    const averageCorrelation = math.mean(correlations);
-
-    displayAnalysisResults('Inter-Item Validity', `Average Inter-Item Correlation: ${averageCorrelation.toFixed(3)}`);
-}
-
-function performPsychometricAnalysis(data) {
-    const items = Object.keys(data[0]);
-    const itemStats = items.map(item => {
-        const scores = data.map(d => d[item]);
-        return {
-            item: item,
-            mean: math.mean(scores),
-            stdDev: math.std(scores)
-        };
-    });
-
-    let resultText = 'Item Statistics:\n';
-    itemStats.forEach(stat => {
-        resultText += `Item ${stat.item}: Mean = ${stat.mean.toFixed(2)}, Std Dev = ${stat.stdDev.toFixed(2)}\n`;
-    });
-
-    displayAnalysisResults('Psychometric Analysis', resultText);
-}
-
-function performIRTAnalysis(data) {
-    // Placeholder for Item Response Theory analysis
-    displayAnalysisResults('IRT Analysis', 'IRT Analysis functionality to be implemented.');
-}
-
-function performRegressionAnalysis(data) {
-    const items = Object.keys(data[0]);
-    if (items.length < 2) {
-        alert('At least two variables are required for regression analysis.');
-        return;
-    }
-
-    const xValues = data.map(d => d[items[0]]);
-    const yValues = data.map(d => d[items[1]]);
-
-    const regression = math.linearRegression(xValues, yValues);
-    const rSquared = math.rSquared(xValues, yValues);
-
-    const resultText = `Regression Equation: y = ${regression.slope.toFixed(3)}x + ${regression.intercept.toFixed(3)}\nR² = ${rSquared.toFixed(3)}`;
-
-    displayAnalysisResults('Regression Analysis', resultText);
-}
-
-function performCorrelationAnalysis(data) {
-    const items = Object.keys(data[0]);
-    const correlations = [];
-
-    for (let i = 0; i < items.length; i++) {
-        for (let j = i + 1; j < items.length; j++) {
-            const xValues = data.map(d => d[items[i]]);
-            const yValues = data.map(d => d[items[j]]);
-            const corr = math.correlation(xValues, yValues);
-            correlations.push({ pair: `${items[i]} & ${items[j]}`, correlation: corr });
-        }
-    }
-
-    let resultText = 'Correlation Coefficients:\n';
-    correlations.forEach(corr => {
-        resultText += `${corr.pair}: ${corr.correlation.toFixed(3)}\n`;
-    });
-
-    displayAnalysisResults('Correlation Analysis', resultText);
-}
-
-function performFactorAnalysis(data) {
-    // Placeholder for Factor Analysis
-    displayAnalysisResults('Factor Analysis', 'Factor Analysis functionality to be implemented.');
-}
-
-function performDescriptiveStatistics(data) {
-    const items = Object.keys(data[0]);
-    let resultText = 'Descriptive Statistics:\n';
-
-    items.forEach(item => {
-        const scores = data.map(d => d[item]);
-        const mean = math.mean(scores);
-        const stdDev = math.std(scores);
-        const min = math.min(scores);
-        const max = math.max(scores);
-
-        resultText += `Item ${item}: Mean = ${mean.toFixed(2)}, Std Dev = ${stdDev.toFixed(2)}, Min = ${min}, Max = ${max}\n`;
-    });
-
-    displayAnalysisResults('Descriptive Statistics', resultText);
-}
-
-// Function to display analysis results
-function displayAnalysisResults(title, results) {
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = `
-        <h2>${title}</h2>
-        <pre>${results}</pre>
-        <button onclick="resetStatistics()">Back to Statistics Options</button>
-    `;
-    document.getElementById('statisticsOptions').classList.add('hidden');
-    resultsContainer.classList.remove('hidden');
-}
-
-// Function to reset statistical analysis
-function resetStatistics() {
-    document.getElementById('results').classList.add('hidden');
-    document.getElementById('statisticsOptions').classList.remove('hidden');
-}
-
-// ===== Module: History and Background Content =====
-
-// Function to show history and background content
-function showHistoryAndBackground() {
-    document.getElementById('assessments').classList.add('hidden');
-    document.getElementById('historyContent').classList.remove('hidden');
-}
-
-// Function to hide history and background content
-function hideHistoryAndBackground() {
-    document.getElementById('historyContent').classList.add('hidden');
-    document.getElementById('assessments').classList.remove('hidden');
-}
-
-// ===== Module: Modal Management =====
-
 // Function to initialize modals
 function initializeModals() {
-    // Close modal when clicking outside of it
+    const modal = document.getElementById('articlesModal');
+    const btn = document.getElementById('showScientificArticles');
+    const span = document.getElementsByClassName('close')[0];
+
+    btn.onclick = function() {
+        showScientificArticles();
+    }
+
+    span.onclick = function() {
+        closeModal();
+    }
+
     window.onclick = function(event) {
-        const modal = document.getElementById('articlesModal');
         if (event.target == modal) {
-            modal.style.display = 'none';
+            closeModal();
         }
-    };
+    }
 }
 
 // Function to show scientific articles modal
@@ -804,19 +511,267 @@ function showScientificArticles() {
 
     modal.style.display = 'block';
 }
+
 // Function to close the modal
 function closeModal() {
     const modal = document.getElementById('articlesModal');
     modal.style.display = 'none';
 }
-});
-document.addEventListener("DOMContentLoaded", () => {
-    const introSection = document.getElementById("intro");
 
-    setTimeout(() => {
-        introSection.style.opacity = "0";
-        setTimeout(() => {
-            introSection.classList.add("hidden");
-        }, 1000); // Match the duration of the CSS transition
-    }, 3000); // Adjust the delay before starting the fade-out effect
-});
+// Use Day.js for better date handling in export function
+function exportResults() {
+    const patientID = prompt("Enter the patient ID for storage:", "");
+    if (!patientID) {
+        alert("Patient ID is required for export.");
+        return;
+    }
+
+    const exportFormat = prompt("Choose export format (txt, csv, json):", "txt");
+    if (['txt', 'csv', 'json'].includes(exportFormat)) {
+        const content = generateExportContent(exportFormat);
+        const timestamp = dayjs().format('YYYY-MM-DD-HH-mm-ss');
+        const fileName = `${patientID}_${timestamp}.${exportFormat}`;
+
+        // For browser download
+        const blob = new Blob([content], { type: `text/${exportFormat}` });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        a.click();
+
+        // Simulate storing results locally
+        storeResultsLocally(fileName, content);
+    } else {
+        alert("Invalid format. Please choose 'txt', 'csv', or 'json'.");
+    }
+}
+
+// Optimize export content generation using lodash
+function generateExportContent(format) {
+    const traits = _.uniq(assessments[currentAssessment].map(q => q.trait));
+    const scores = traits.map(calculateTraitScore);
+
+    if (format === "txt") {
+        return `Dark Triad Assessment Results
+Assessment: ${currentAssessment}
+
+${_.zip(traits, scores).map(([trait, score]) => `${trait}: ${score.toFixed(2)}% - ${interpretScore(trait, score)}`).join('\n')}`;
+    } else if (format === "csv") {
+        return `Trait,Score,Interpretation
+${_.zip(traits, scores).map(([trait, score]) => `${trait},${score.toFixed(2)},${interpretScore(trait, score)}`).join('\n')}`;
+    } else if (format === "json") {
+        return JSON.stringify({
+            assessment: currentAssessment,
+            results: _.zipObject(traits, scores.map(score => ({
+                score: score.toFixed(2),
+                interpretation: interpretScore(traits[scores.indexOf(score)], score)
+            })))
+        }, null, 2);
+    }
+}
+
+// Function to store results locally using localStorage
+function storeResultsLocally(fileName, content) {
+    try {
+        localStorage.setItem(fileName, content);
+        console.log(`File ${fileName} has been stored locally.`);
+    } catch (error) {
+        console.error(`Error storing file locally: ${error}`);
+        alert(`Failed to store file ${fileName} locally. Error: ${error.message}`);
+    }
+}
+
+// Function to upload stored results
+function uploadStoredResults() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.txt,.csv,.json';
+    fileInput.onchange = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            const uploadedData = parseUploadedContent(content, file.name.split('.').pop());
+            visualizeUploadedData(uploadedData);
+        };
+        reader.readAsText(file);
+    };
+    fileInput.click();
+}
+
+// Function to parse uploaded content
+function parseUploadedContent(content, fileType) {
+    const parseData = (lines, separator) => {
+        return lines.reduce((data, line) => {
+            const [trait, score] = line.split(separator);
+            if (trait && score) {
+                data[trait.trim()] = parseFloat(score);
+            }
+            return data;
+        }, {});
+    };
+
+    switch (fileType) {
+        case 'csv':
+            return parseData(content.split('\n').slice(1), ',');
+        case 'json':
+            return JSON.parse(content).results;
+        default: // Assume TXT format
+            return parseData(content.split('\n'), ':');
+    }
+}
+
+// Function to visualize uploaded data
+function visualizeUploadedData(data) {
+    const traits = Object.keys(data);
+    const scores = Object.values(data).map(parseFloat);
+
+    ['assessments', 'results', 'resultsChart'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden', id !== 'assessments');
+    });
+
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = `
+        <h2>Uploaded Results</h2>
+        <div id="dataVisualization">
+            ${traits.map((trait, index) => `
+                <div class="trait-container">
+                    <p>${trait}: ${scores[index].toFixed(2)}% 
+                    <span class="trait-explanation" title="${getTraitExplanation(trait)}">ℹ️</span></p>
+                    <div class="progress-bar" style="width: ${scores[index]}%;"></div>
+                </div>
+            `).join('')}
+        </div>
+        <div id="visualizationControls">
+            <button onclick="toggleChartType()">Toggle Chart Type</button>
+            <button onclick="toggleDataLabels()">Toggle Data Labels</button>
+            <button onclick="exportVisualization()">Export Visualization</button>
+        </div>
+        <button onclick="resetAssessment()">Back to Assessments</button>
+    `;
+
+    createChart(traits, scores);
+    initializeDataComparison(data);
+}
+
+// Function to toggle between different chart types
+function toggleChartType() {
+    if (window.resultsChart.config.type === 'radar') {
+        window.resultsChart.config.type = 'bar';
+    } else {
+        window.resultsChart.config.type = 'radar';
+    }
+    window.resultsChart.update();
+}
+
+// Function to toggle data labels on the chart
+function toggleDataLabels() {
+    const dataLabels = window.resultsChart.options.plugins.datalabels;
+    dataLabels.display = !dataLabels.display;
+    window.resultsChart.update();
+}
+
+// Function to export the current visualization
+function exportVisualization() {
+    const canvas = document.getElementById('resultsChart');
+    const image = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'dark_triad_visualization.png';
+    link.click();
+}
+
+// Function to initialize data comparison feature
+function initializeDataComparison(data) {
+    const comparisonContainer = document.createElement('div');
+    comparisonContainer.id = 'dataComparison';
+    comparisonContainer.innerHTML = `
+        <h3>Compare Your Results</h3>
+        <select id="comparisonSelect">
+            <option value="average">Average Scores</option>
+            <option value="highScorer">High Scorer Profile</option>
+            <option value="lowScorer">Low Scorer Profile</option>
+        </select>
+        <div id="comparisonChart"></div>
+    `;
+    document.getElementById('results').appendChild(comparisonContainer);
+
+    document.getElementById('comparisonSelect').addEventListener('change', (e) => {
+        updateComparison(data, e.target.value);
+    });
+
+    // Initial comparison
+    updateComparison(data, 'average');
+}
+
+// Function to update the comparison chart
+function updateComparison(userData, comparisonType) {
+    const comparisonData = getComparisonData(comparisonType);
+    const traits = Object.keys(userData);
+    const userScores = traits.map(trait => userData[trait]);
+    const comparisonScores = traits.map(trait => comparisonData[trait]);
+
+    const ctx = document.getElementById('comparisonChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: traits,
+            datasets: [
+                {
+                    label: 'Your Scores',
+                    data: userScores,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                },
+                {
+                    label: `${comparisonType.charAt(0).toUpperCase() + comparisonType.slice(1)} Scores`,
+                    data: comparisonScores,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Function to get comparison data from stored results
+async function getComparisonData(type) {
+    try {
+        const storedData = await fetchStoredData();
+        if (!storedData || storedData.length === 0) {
+            throw new Error('No stored data available');
+        }
+
+        const traits = Object.keys(storedData[0]);
+        const comparisonData = {};
+
+        if (type === 'average') {
+            traits.forEach(trait => {
+                const sum = storedData.reduce((acc, score) => acc + score[trait], 0);
+                comparisonData[trait] = Math.round(sum / storedData.length);
+            });
+        } else if (type === 'highScorer') {
+            traits.forEach(trait => {
+                comparisonData[trait] = Math.max(...storedData.map(score => score[trait]));
+            });
+        } else if (type === 'lowScorer') {
+            traits.forEach(trait => {
+                comparisonData[trait] = Math.min(...storedData.map(score => score[trait]));
+            });
+        } else {
+            throw new Error('Invalid comparison type');
+        }
+
+        return comparisonData;
+    } catch (error) {
+        console.error('Error fetching comparison data:', error);
+        return null;
+    }
+}
