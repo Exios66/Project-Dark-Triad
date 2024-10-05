@@ -1,77 +1,80 @@
-# Project Dark Triad
+# Dark Triad Assessments
 
-## Comprehensive Personality Assessments Web Application
+## Description
 
-Project Dark Triad is a web application designed to provide comprehensive personality assessments, focusing on the Dark Triad traits (Machiavellianism, Narcissism, and Psychopathy) and other related personality constructs.
+Dark Triad Assessments is a web application designed to provide psychological assessments related to the Dark Triad personality traits (Machiavellianism, Narcissism, and Psychopathy) and other related personality measures. This tool is intended for research and educational purposes.
 
-### Features
+## Features
 
-- User registration and authentication
-- Multiple personality assessments including:
-  - Short Dark Triad (SD3)
-  - Dirty Dozen
-  - Short Dark Tetrad (SD4)
-  - MACH-IV
-  - Big Five Inventory (BFI)
-  - HEXACO-60
-  - MMPI-2-RF
-- Secure storage of user data and assessment results
-- Admin panel for managing assessments and viewing statistics
+**Multiple psychological assessments:**
+### Short Dark Triad (SDT3)
+### Dirty Dozen
+### Short Dark Tetrad (SDT4)
+### MACH IV
+### MMPI-style questions
+### HEXACO Personality Inventory
+### Big Five (OCEAN)
+### Interactive user interface with dark mode support
+### Real-time progress tracking
+### Visualized results using Chart.js
+### Statistical analysis tools
+#### Responsive design for various devices
 
-### Tech Stack
-
-- Backend: Node.js with Express.js
-- Database: SQLite
-- Frontend: HTML, CSS, JavaScript
-- Authentication: JSON Web Tokens (JWT)
-- Testing: Jest
-
-### Prerequisites
-
-- Node.js (v14 or later)
-- npm (v6 or later)
-
-### Installation
+## Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/your-username/project-dark-triad.git
-   cd project-dark-triad
-   ```
 
-2. Install dependencies:
+   ```git
+   git clone https://github.com/yourusername/dark-triad-assessments.git
    ```
+3. Navigate to the project directory:
+
+   ```bash
+   cd dark-triad-assessments
+   ```
+4. Install dependencies:
+
+   ```bash
    npm install
    ```
 
-3. Set up environment variables:
-   Create a `.env` file in the root directory and add the following:
-   ```
-   JWT_SECRET=your_jwt_secret_here
-   PORT=3000
-   ```
-
-4. Initialize the database:
-   ```
-   sqlite3 database.sqlite < database.sql
-   ```
-
-### Running the Application
+## Usage
 
 1. Start the server:
-   ```
+
+    ```bash
    npm start
    ```
+3. Open a web browser and go to `http://localhost:3000`
 
-2. For development with auto-restart:
-   ```
-   npm run dev
-   ```
+## Technologies Used
 
-3. Access the application at `http://localhost:3000`
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Node.js
+- Express.js
+- Chart.js
+- Math.js
 
-### Testing
+## Contributing
 
-Run the test suite:
-```
-npm test
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Acknowledgments
+
+- [Chart.js](https://www.chartjs.org/) for data visualization
+- [Math.js](https://mathjs.org/) for mathematical operations
+- All the researchers and psychologists who developed the original assessment tools
+
+## Disclaimer
+
+This application is for educational and research purposes only. It should not be used for clinical diagnosis or treatment. Always consult with a qualified mental health professional for psychological concerns.
+
+## Contact
+
+If you have any questions or suggestions, please open an issue on this repository.
