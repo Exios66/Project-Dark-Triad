@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Comprehensive Personality Assessments</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Comprehensive Personality Assessments Web Application">
+    <meta name="keywords" content="Dark Triad, OCEAN, HEXACO, MMPI, Personality Tests, Psychology, Machiavellianism, Narcissism, Psychopathy">
+    <meta property="og:title" content="Comprehensive Personality Assessments">
+    <meta property="og:description" content="Take various psychological assessments to explore different personality traits and models.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/">
+    <meta property="og:image" content="https://yourusername.github.io/images/og-image.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Comprehensive Personality Assessments</h1>
+        <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙</button>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#" data-assessment="sdt3">SDT3</a></li>
+            <li><a href="#" data-assessment="dirtyDozen">Dirty Dozen</a></li>
+            <li><a href="#" data-assessment="sdt4">SDT4</a></li>
+            <li><a href="#" data-assessment="machIV">MACH-IV</a></li>
+            <li><a href="#" data-assessment="bfi">Big Five Inventory</a></li>
+            <li><a href="#" data-assessment="hexaco">HEXACO-60</a></li>
+            <li><a href="#" data-assessment="mmpi">MMPI-2-RF</a></li>
+            <li><a href="#" id="statisticsLink">Statistics</a></li>
+            <li><a href="#" id="historyLink">History</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="welcome" class="assessment">
+            <h2>Welcome to Comprehensive Personality Assessments</h2>
+            <p>Explore various psychological assessments to gain insights into different personality traits and models. Choose an assessment from the navigation menu to begin.</p>
+        </section>
+
+        <section id="question" class="assessment hidden">
+            <!-- Questions will be dynamically inserted here -->
+        </section>
+
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progress">
+                <span class="progress-text">0%</span>
+            </div>
+        </div>
+
+        <section id="results" class="assessment hidden">
+            <!-- Results will be dynamically inserted here -->
+        </section>
+
+        <canvas id="resultsChart" class="hidden"></canvas>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="https://github.com/yourusername/personality-assessments/wiki" target="_blank" rel="noopener">Repository Wiki</a></li>
+                    <li><a href="#" id="showScientificArticles">Scientific Articles</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>About</h3>
+                <p>This application provides comprehensive psychological assessments and statistical analysis tools for research and educational purposes.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Disclaimer</h3>
+                <p>These assessments are for educational and research purposes only. They are not substitutes for professional psychological evaluation.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="articlesModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="articlesModalTitle">
+        <div class="modal-content">
+            <button class="close" id="closeModal" aria-label="Close">&times;</button>
+            <h2 id="articlesModalTitle">Scientific Articles</h2>
+            <ul id="articlesList"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

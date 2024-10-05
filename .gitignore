@@ -3,8 +3,28 @@ node_modules/
 
 # Environment variables
 .env
+# Node modules
+node_modules/
+
+# Environment variables
+.env
 
 # Logs
+*.log
+
+# SQLite database
+database.sqlite
+
+# Public directory
+public/
+
+# Logs
+*.log
+
+# Core application files
+/index.html
+/styles.css
+/script.js
 logs
 *.log
 npm-debug.log*

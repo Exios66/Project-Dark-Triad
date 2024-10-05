@@ -1,16 +1,21 @@
 const fs = require('fs');
 const path = require('path');
 
-// Copy static files to public directory
-const publicDir = path.join(__dirname, 'public');
-if (!fs.existsSync(publicDir)) {
-  fs.mkdirSync(publicDir);
-}
+const srcDir = path.join(__dirname, 'src');
+const rootDir = __dirname;
 
 const filesToCopy = ['index.html', 'styles.css', 'script.js'];
 
 filesToCopy.forEach(file => {
-  fs.copyFileSync(path.join(__dirname, file), path.join(publicDir, file));
+  const srcPath = path.join(srcDir, file);
+  const destPath = path.join(rootDir, file);
+  
+  if (fs.existsSync(srcPath)) {
+    fs.copyFileSync(srcPath, destPath);
+    console.log(`Copied ${file} to root directory`);
+  } else {
+    console.log(`Warning: ${file} not found in src directory`);
+  }
 });
 
-console.log('Static files built successfully.');
+console.log('Build process completed.');

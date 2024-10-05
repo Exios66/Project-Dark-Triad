@@ -1,6 +1,9 @@
+# Changelog
+
 ## [0.0.1] - 2024-10-04
 
 ### Added
+
 - v 1.0.0 a
 - Update styles.css
 - Update script.js

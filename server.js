@@ -24,8 +24,9 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
+// Add this near the top of your server.js file
+app.use(express.static(path.join(__dirname, 'src')));
+app.use(express.static(__dirname));
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
@@ -113,8 +114,9 @@ app.get('/user', verifyToken, async (req, res) => {
   }
 });
 
+// Update the route for the main page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'src', 'index.html'));
 });
 
 // Fetch questions for a specific assessment (with caching)
