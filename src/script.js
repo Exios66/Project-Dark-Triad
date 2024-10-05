@@ -329,21 +329,242 @@ window.onclick = function(event) {
 
 // Initialize event listeners and other setup
 document.addEventListener('DOMContentLoaded', () => {
-    initializeDarkMode();
-    setupEventListeners();
-});
+    const content = document.getElementById('content');
+    const nav = document.querySelector('nav');
+    let token = localStorage.getItem('token');
 
-// Function to set up event listeners
-function setupEventListeners() {
-    document.querySelectorAll('nav a[data-assessment]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            startAssessment(e.target.dataset.assessment);
-        });
+    nav.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (e.target.tagName === 'A') {
+            const page = e.target.id;
+            loadPage(page);
+        }
     });
 
-    document.getElementById('statisticsLink').addEventListener('click', showStatisticsOptions);
-    document.getElementById('historyLink').addEventListener('click', showHistoryAndBackground);
-    document.getElementById('showScientificArticles').addEventListener('click', showScientificArticles);
-    document.getElementById('closeModal').addEventListener('click', closeModal);
-}
+    function loadPage(page) {
+        switch(page) {
+            case 'home':
+                content.innerHTML = '<h2>Welcome to Project Dark Triad</h2><p>Explore various psychological assessments to gain insights into different personality traits and models.</p>';
+                break;
+            case 'register':
+                content.innerHTML = `
+                    <h2>Register</h2>
+                    <form id="registerForm">
+                        <input type="text" id="username" placeholder="Username" required>
+                        <input type="email" id="email" placeholder="Email" required>
+                        <input type="password" id="password" placeholder="Password" required>
+                        <button type="submit">Register</button>
+                    </form>
+                `;
+                document.getElementById('registerForm').addEventListener('submit', register);
+                break;
+            case 'login':
+                content.innerHTML = `
+                    <h2>Login</h2>
+                    <form id="loginForm">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                        <button type="submit">Login</button>
+                    </form>
+                `;
+                document.getElementById('loginForm').addEventListener('submit', login);
+                break;
+            case 'assessments':
+                if (!token) {
+                    content.innerHTML = '<h2>Assessments</h2><p>Please log in to view available assessments.</p>';
+                } else {
+                    fetchAssessments();
+                }
+                break;
+            case 'results':
+                if (!token) {
+                    content.innerHTML = '<h2>Results</h2><p>Please log in to view your results.</p>';
+                } else {
+                    fetchResults();
+                }
+                break;
+        }
+    }
+
+    async function register(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, email, password }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Registration successful!');
+                token = data.token;
+                localStorage.setItem('token', token);
+                loadPage('home');
+            } else {
+                alert(`Registration failed: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during registration.');
+        }
+    }
+
+    async function login(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Login successful!');
+                token = data.token;
+                localStorage.setItem('token', token);
+                loadPage('home');
+            } else {
+                alert(`Login failed: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred during login.');
+        }
+    }
+
+    async function fetchAssessments() {
+        try {
+            const response = await fetch('/api/assessments', {
+                headers: {
+                    'x-access-token': token
+                }
+            });
+            const assessments = await response.json();
+            let html = '<h2>Available Assessments</h2><ul>';
+            assessments.forEach(assessment => {
+                html += `<li><a href="#" class="assessment" data-id="${assessment.assessment_id}">${assessment.assessment_name}</a></li>`;
+            });
+            html += '</ul>';
+            content.innerHTML = html;
+
+            document.querySelectorAll('.assessment').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    startAssessment(e.target.dataset.id);
+                });
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            content.innerHTML = '<h2>Assessments</h2><p>Error loading assessments. Please try again later.</p>';
+        }
+    }
+
+    async function startAssessment(assessmentId) {
+        try {
+            const response = await fetch(`/api/assessment/${assessmentId}/questions`, {
+                headers: {
+                    'x-access-token': token
+                }
+            });
+            const questions = await response.json();
+            let html = `<h2>${questions[0].assessment_name}</h2><form id="assessmentForm">`;
+            questions.forEach(question => {
+                html += `
+                    <div>
+                        <p>${question.question_text}</p>
+                        <input type="range" min="1" max="5" value="3" class="slider" id="q${question.question_id}">
+                        <div class="slider-labels">
+                            <span>Strongly Disagree</span>
+                            <span>Strongly Agree</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '<button type="submit">Submit</button></form>';
+            content.innerHTML = html;
+
+            document.getElementById('assessmentForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitAssessment(assessmentId, questions);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+            content.innerHTML = '<h2>Assessment</h2><p>Error loading assessment. Please try again later.</p>';
+        }
+    }
+
+    async function submitAssessment(assessmentId, questions) {
+        const answers = questions.map(question => ({
+            questionId: question.question_id,
+            value: parseInt(document.getElementById(`q${question.question_id}`).value)
+        }));
+
+        try {
+            const response = await fetch(`/api/assessment/${assessmentId}/submit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': token
+                },
+                body: JSON.stringify({ answers })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                alert('Assessment submitted successfully!');
+                loadPage('results');
+            } else {
+                alert(`Submission failed: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while submitting the assessment.');
+        }
+    }
+
+    async function fetchResults() {
+        try {
+            const response = await fetch('/api/user/results', {
+                headers: {
+                    'x-access-token': token
+                }
+            });
+            const results = await response.json();
+            let html = '<h2>Your Assessment Results</h2>';
+            if (results.length === 0) {
+                html += '<p>You have not completed any assessments yet.</p>';
+            } else {
+                results.forEach(result => {
+                    html += `
+                        <div class="result">
+                            <h3>${result.assessment_name}</h3>
+                            <p>Total Score: ${result.total_score}</p>
+                            <p>Completed on: ${new Date(result.completed_at).toLocaleString()}</p>
+                            <details>
+                                <summary>Detailed Results</summary>
+                                <pre>${JSON.stringify(JSON.parse(result.result_details), null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                });
+            }
+            content.innerHTML = html;
+        } catch (error) {
+            console.error('Error:', error);
+            content.innerHTML = '<h2>Results</h2><p>Error loading results. Please try again later.</p>';
+        }
+    }
+
+    // Load the home page by default
+    loadPage('home');
+});

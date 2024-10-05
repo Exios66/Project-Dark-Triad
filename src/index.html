@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Dark Triad Assessments</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Dark Triad Assessments Web Application">
+    <meta name="keywords" content="Dark Triad, Assessments, Psychology, Personality Tests, Machiavellianism, Narcissism, Psychopathy">
+    <meta property="og:title" content="Dark Triad Assessments">
+    <meta property="og:description" content="Take psychological assessments to explore personality traits associated with the Dark Triad.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourusername.github.io/">
+    <meta property="og:image" content="https://yourusername.github.io/images/og-image.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Dark Triad Assessments</h1>
+        <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙</button>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#" data-assessment="sdt3">SDT3</a></li>
+            <li><a href="#" data-assessment="dirtyDozen">Dirty Dozen</a></li>
+            <li><a href="#" data-assessment="sdt4">SDT4</a></li>
+            <li><a href="#" data-assessment="machIV">MACH IV</a></li>
+            <li><a href="#" data-assessment="mmpi">MMPI-style</a></li>
+            <li><a href="#" data-assessment="hexaco">HEXACO</a></li>
+            <li><a href="#" data-assessment="ocean">OCEAN</a></li>
+            <li><a href="#" id="statisticsLink">Statistics</a></li>
+            <li><a href="#" id="historyLink">History & Background</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="intro">
+            <h2>Welcome to Dark Triad Assessments</h2>
+            <p>Explore various psychological assessments related to the Dark Triad and other personality traits.</p>
+        </section>
+
+        <section id="assessments">
+            <article id="sdt3" class="assessment">
+                <h2>Short Dark Triad (SDT3)</h2>
+                <p>Assesses Machiavellianism, Narcissism, and Psychopathy.</p>
+                <button data-assessment="sdt3">Start SDT3 Assessment</button>
+            </article>
+            <article id="dirtyDozen" class="assessment">
+                <h2>Dirty Dozen</h2>
+                <p>A concise measure of the Dark Triad traits.</p>
+                <button data-assessment="dirtyDozen">Start Dirty Dozen Assessment</button>
+            </article>
+            <article id="sdt4" class="assessment">
+                <h2>Short Dark Tetrad (SDT4)</h2>
+                <p>Assesses Machiavellianism, Narcissism, Psychopathy, and Sadism.</p>
+                <button data-assessment="sdt4">Start SDT4 Assessment</button>
+            </article>
+            <article id="machIV" class="assessment">
+                <h2>MACH IV</h2>
+                <p>Measures Machiavellianism in interpersonal relationships.</p>
+                <button data-assessment="machIV">Start MACH IV Assessment</button>
+            </article>
+            <article id="mmpi" class="assessment">
+                <h2>MMPI-style</h2>
+                <p>A comprehensive personality and psychopathology assessment.</p>
+                <button data-assessment="mmpi">Start MMPI-style Assessment</button>
+            </article>
+            <article id="hexaco" class="assessment">
+                <h2>HEXACO</h2>
+                <p>Evaluates six major dimensions of personality.</p>
+                <button data-assessment="hexaco">Start HEXACO Assessment</button>
+            </article>
+            <article id="ocean" class="assessment">
+                <h2>OCEAN (Big Five)</h2>
+                <p>Assesses the five broad personality traits.</p>
+                <button data-assessment="ocean">Start OCEAN Assessment</button>
+            </article>
+        </section>
+
+        <div class="progress-container">
+            <div id="progressBar" 
+                 class="progress-bar" 
+                 role="progressbar" 
+                 aria-label="Progress"
+                 aria-valuemin="0" 
+                 aria-valuemax="100" 
+                 aria-valuenow="0">
+                <span class="progress-text">0%</span>
+            </div>
+        </div>
+
+        <section id="assessmentQuestions" class="hidden" aria-live="polite"></section>
+
+        <section id="results" class="hidden"></section>
+
+        <canvas id="resultsChart" class="hidden"></canvas>
+
+        <section id="statisticsOptions" class="hidden">
+            <h2>Statistical Analysis</h2>
+            <p>Upload your data file to perform statistical analyses.</p>
+            <label for="dataUpload">Choose a data file:</label>
+            <input type="file" id="dataUpload" accept=".csv,.json" aria-describedby="fileUploadDescription">
+            <p id="fileUploadDescription">Accepted file formats: CSV, JSON</p>
+            <div id="analysisButtons">
+                <button id="descriptiveStats" class="analysis-btn">Descriptive Statistics</button>
+                <button type="button" id="correlationAnalysis" class="analysis-btn">Correlation Analysis</button>
+                <button type="button" id="regressionAnalysis" class="analysis-btn">Regression Analysis</button>
+                <button type="button" id="factorAnalysis" class="analysis-btn">Factor Analysis</button>
+                <button type="button" id="clusterAnalysis" class="analysis-btn">Cluster Analysis</button>
+                <button type="button" id="anovaAnalysis" class="analysis-btn">ANOVA</button>
+                <button type="button" id="tTest" class="analysis-btn">T-Test</button>
+                <button type="button" id="chiSquareTest" class="analysis-btn">Chi-Square Test</button>
+            </div>
+            <button type="button" id="resetStatistics">Back</button>
+        </section>
+
+        <section id="historyContent" class="hidden">
+            <h2>History & Background</h2>
+            <p>The Dark Triad refers to three personality traits: Narcissism, Machiavellianism, and Psychopathy. These traits are called 'dark' because of their malevolent qualities.</p>
+            <button id="hideHistory">Back</button>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="https://github.com/Exios66/dark-triad-assessments/wiki" target="_blank" rel="noopener">Repository Wiki</a></li>
+                    <li><a href="#" id="showScientificArticles">Scientific Articles</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>About</h3>
+                <p>This application provides psychological assessments and statistical analysis tools for research purposes.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="articlesModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="articlesModalTitle">
+        <div class="modal-content">
+            <button class="close" id="closeModal" aria-label="Close">&times;</button>
+            <h2 id="articlesModalTitle">Scientific Articles</h2>
+            <ul id="articlesList"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
